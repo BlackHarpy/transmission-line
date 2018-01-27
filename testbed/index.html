@@ -4,8 +4,15 @@
 <script>
 	var game = new GameData(6, 6);
 	
-	game.generateProblem("Hello");
+	var inputString = game.generateProblem("Hello", [TRANSFORM_SWAPDOWN, TRANSFORM_SWAPUP, TRANSFORM_SWAPDOWN, TRANSFORM_CHANGECASE]);
 	game.debugPrintProblem();
+	console.log("INPUT: "+ inputString);
+	
+	// TEST Let´s make the string go through the matrix
+	for (var x = 0; x < game.getCols(); x++) {
+		inputString = game.applyTransforms(inputString, x);
+		console.log(inputString);
+	}
 </script>
 
 </head>
