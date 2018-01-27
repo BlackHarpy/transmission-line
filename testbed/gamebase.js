@@ -1,4 +1,4 @@
-function GameData (w, h) {
+export function GameData (w, h) {
 	this.width  = w;
 	this.height = h;
 	this.matrix = new Int8Array(w*h);
