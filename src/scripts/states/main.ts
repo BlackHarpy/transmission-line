@@ -1,24 +1,29 @@
 /// <reference path="../types.d.ts"/>
 
 import { State } from '../state'
-import { GameData } from '../../../testbed/gamebase.js'
-
+import { Matrix } from '../elements/matrix'
 const cursorImage = require('assets/test-sprite.gif')
+const tileTest = require('assets/block.png')
 
 export class MainState extends State {
   testSprite: Phaser.Sprite
   testSprite2: Phaser.Sprite
   controls: Control[]
   player: Player
+  matrix: any
 
   preload(): void {
    this.game.load.image('cursor', cursorImage)
+   this.game.load.image('tile', tileTest)
   }
 
   create(): void {
     this.setControls()
-    console.log(GameData)
+    this.matrix = new Matrix(this.game, 5,5)
+    this.matrix.drawMatrix()
+    this.matrix.setLetters()
   }
+
   update(): void {
   }
 

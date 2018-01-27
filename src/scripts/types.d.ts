@@ -7,3 +7,9 @@ interface Control {
   name: string,
   sprite: Phaser.Sprite
 }
+
+interface Letter {
+  value: string
+  sprite: Phaser.Sprite
+  text: Phaser.Text
+}
