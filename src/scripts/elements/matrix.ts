@@ -1,13 +1,15 @@
 import { GameData } from '../../../testbed/gamebase.js'
+import { TILE_SIZE } from '../constants'
+import {TRANSFORM_NONE, TRANSFORM_SWAPUP, TRANSFORM_SWAPDOWN, TRANSFORM_CHANGECASE} from '../../../testbed/gamebase.js'
 
 export class Matrix {
   game: Phaser.Game
   gameData: any
-  letters: Letter[][]
-  cells: Phaser.Sprite[][]
+  letters: Letter[]
+  cells: Cell[][]
   width: number
   height: number
-  lettersPosition: number[][]
+  currentColumnPosition: number
 
   constructor(game, width, height) {
     this.game = game
@@ -16,62 +18,61 @@ export class Matrix {
     this.height = height
     this.cells = []
     this.letters = []
-    this.lettersPosition = [
-      [1, 0, 0, 0, 0],
-      [1, 0, 0, 0, 0],
-      [1, 0, 0, 0, 0],
-      [1, 0, 0, 0, 0],
-      [1, 0, 0, 0, 0],
-    ]
+    this.currentColumnPosition = 0
   }
 
-  setLetters() {
-    for(let i = 0; i < this.height; i++) {
-      const row: Letter[] = []
-      for(let j = 0; j < this.width; j++) {
-        if (i === 0) {
-          const blockCenter = {
-            x: this.cells[i][j].centerX,
-            y: this.cells[i][j].centerY,
-          }
-          row.push({
-            value: 'a',
-            sprite: new Phaser.Sprite(this.game, 0,0),
-            text: this.game.add.text(blockCenter.x,  blockCenter.y, 'a')
-          })
-        }
-      }
-      this.letters.push(row)
-    }
+  getCellSprite(i,j) {
+    return this.cells[i][j].sprite
+  }
+
+  setLetters(splitWord) {
+    splitWord.forEach((character, index) => {
+      var spriteCharacter = new Phaser.Text(this.game, 0, 0, character)
+      spriteCharacter.anchor.set(0.5, 0.5)
+      spriteCharacter.position.set(this.getCellSprite(this.currentColumnPosition,index).centerX, this.getCellSprite(this.currentColumnPosition,index).centerY)
+      this.game.add.existing(spriteCharacter)
+      this.letters.push({
+        value: character,
+        sprite: new Phaser.Sprite(this.game, 0, 0),
+        text: spriteCharacter
+      })
+    })
+  }
+
+  initialize(word) {
+    const splitWord = word.split('')
+    this.setLetters(splitWord)
   }
 
   findLetterNextPosition(i, j) {
-    this.lettersPosition[i][j] = 0
-    // this.lettersPosition
+
   }
 
   updatePosition() {
-    for(let i = 0; i < this.height; i++) {
-      for(let j = 0; j < this.width; j++) {
-        if (this.lettersPosition[i][j] === 1) {
-          //move to next position
-
-        }
-      }
-    }
   }
 
   drawMatrix() {
     for(let i = 0; i < this.height; i++) {
-      const row: Phaser.Sprite[] = []
+      const row: Cell[] = []
       for(let j = 0; j < this.width; j++) {
         const cell = this.game.add.sprite(100 + (75 * (i + 1)), 100 + (80 * (j + 1)), 'tile')
-        row.push(cell)
+        row.push({
+          transformValue: TRANSFORM_NONE,
+          sprite: cell
+        })
       }
       this.cells.push(row)
     }
   }
 
-  
+  setControl(cellPosition, control) {
+    this.gameData.setCell(cellPosition.x, cellPosition.y, control)
+    //set graphic of control
+  }
 
+  setControlTest() {
+    this.setControl({x: 0, y: 0}, TRANSFORM_CHANGECASE)
+    console.log(this.gameData.getCell(0, 0))
+    console.log(this.gameData.applyTransforms('holas', 0))
+  }
 }

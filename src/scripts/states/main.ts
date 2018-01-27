@@ -21,7 +21,8 @@ export class MainState extends State {
     this.setControls()
     this.matrix = new Matrix(this.game, 5,5)
     this.matrix.drawMatrix()
-    this.matrix.setLetters()
+    this.matrix.initialize('holas')
+    this.matrix.setControlTest()
   }
 
   update(): void {

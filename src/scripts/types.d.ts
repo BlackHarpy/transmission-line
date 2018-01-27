@@ -13,3 +13,8 @@ interface Letter {
   sprite: Phaser.Sprite
   text: Phaser.Text
 }
+
+interface Cell {
+  transformValue: number
+  sprite: Phaser.Sprite
+}

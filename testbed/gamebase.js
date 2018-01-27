@@ -1,7 +1,7 @@
-const TRANSFORM_NONE		= 0;
-const TRANSFORM_SWAPUP		= 1;
-const TRANSFORM_SWAPDOWN	= 2;
-const TRANSFORM_CHANGECASE	= 3;
+export const TRANSFORM_NONE		= 0;
+export const TRANSFORM_SWAPUP		= 1;
+export const TRANSFORM_SWAPDOWN	= 2;
+export const TRANSFORM_CHANGECASE	= 3;
 
 export function GameData (w, h) {
 // function GameData (w, h) {
@@ -79,6 +79,7 @@ export function GameData (w, h) {
 	
 	this.applyTransforms = function (inStr, step) {
 		var input = inStr;
+		console.log('entrada', inStr)
 
 		if (input.length > this.height) {
 			console.log ("Cannot put the input string through the transform column! Word is too long.");
@@ -108,9 +109,11 @@ export function GameData (w, h) {
 					
 				case TRANSFORM_CHANGECASE:
 					input = this.changeCase (input, r);
+					console.log('changeCASE')
 					break;
 			}
 		}
+		console.log('hola te devuelvo esto', input)
 		return input;
 	};
 
