@@ -12,6 +12,7 @@ export class Matrix {
   currentColumnPosition: number
   transmission: string
   selectedControl: number
+  hightlightActive: boolean
   hightlightTimer: Phaser.Timer
 
   constructor(game, width, height) {
@@ -23,6 +24,7 @@ export class Matrix {
     this.letters = []
     this.currentColumnPosition = 0
     this.hightlightTimer = this.game.time.create(false)
+    this.hightlightActive = false
   }
 
   getCellSprite(i,j) {
@@ -94,19 +96,30 @@ export class Matrix {
     return this.game.add.existing(cellSprite)
   }
 
-  
-
   setSelectedControl(controlValue) {
     console.log('control id', controlValue)
     this.selectedControl = controlValue
+    this.hightlightActive = true
   }
 
   setControl(cellPosition, control) {
     this.cells[cellPosition.x][cellPosition.y].transformValue = control
-    this.gameData.setCell(cellPosition.x, cellPosition.y, control)
-    console.log(this.cells)
+    this.gameData.setCellWithRestrictions(cellPosition.x, cellPosition.y, control)
     this.gameData.debugPrintProblem()
     //set graphic of control
+  }
+
+  getAvailableTiles(i,j) {
+    let available = [this.cells[i][j]]
+    switch (this.selectedControl) {
+      case TRANSFORM_SWAPDOWN: 
+        if (j < this.height - 1) {
+          available.push(this.cells[i][j + 1])
+        } else {
+          available = []
+        }
+    }
+    return available
   }
 
   handleCellClick(sprite, pointer, i, j) {
@@ -114,15 +127,19 @@ export class Matrix {
   }
 
   handleCellPointerOver(sprite, pointer, i, j) {
-    console.log(i, j)
-    this.hightlightControl(sprite)
-
+    if (this.hightlightActive) {
+      const availableTiles = this.getAvailableTiles(i, j)
+      availableTiles.forEach(tile => {
+        this.hightlightControl(tile.sprite)
+      })
+    }
   }
 
   handleCellPointerOut(sprite, pointer, i, j) {
-    console.log(i, j)
-    this.resetFocus(sprite)
-
+    const availableTiles = this.getAvailableTiles(i, j)
+      availableTiles.forEach(tile => {
+        this.resetFocus(tile.sprite)
+      })
   }
 
   hightlightControl(sprite): void {
@@ -142,6 +159,5 @@ export class Matrix {
     this.hightlightTimer.stop()
     sprite.tint = 0xffffff
   }
-
 
 }
