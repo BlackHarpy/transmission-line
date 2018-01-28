@@ -1,4 +1,5 @@
 import { GameData } from '../../../testbed/gamebase.js'
+import { Utils } from './utils'
 import { TILE_SIZE, SCALE } from '../constants'
 import { TRANSFORM_NONE, TRANSFORM_SWAPUP, TRANSFORM_SWAPDOWN, TRANSFORM_CHANGECASE } from '../../../testbed/gamebase.js'
 
@@ -35,13 +36,21 @@ export class Matrix {
 
   setLetters(splitWord) {
     splitWord.forEach((character, index) => {
-      var spriteCharacter = new Phaser.Text(this.game, 0, 0, character, this.textStyle)
-      spriteCharacter.anchor.set(0.5, 0.5)
-      spriteCharacter.position.set(this.getCellSprite(0, index).centerX - 80, this.getCellSprite(0, index).centerY)
+      const x = this.getCellSprite(0, index).centerX - 100
+      const y = this.getCellSprite(0, index).centerY - 60
+
+      const spriteCharacter = new Phaser.Text(this.game, 0, 0, character, this.textStyle)
+      const boxSprite = this.setBoxSprite(x, 0)   
+
+      Utils.createFallTween(this.game, boxSprite, y)
+
+      spriteCharacter.anchor.set(0.5, 0.5)      
+      spriteCharacter.position.set(boxSprite.centerX, y + 25)
       this.game.add.existing(spriteCharacter)
+
       this.letters.push({
         value: character,
-        sprite: new Phaser.Sprite(this.game, 0, 0),
+        sprite: boxSprite,
         text: spriteCharacter
       })
     })
@@ -49,7 +58,10 @@ export class Matrix {
 
   moveLetters() {
     this.letters.forEach((letter, index) => {
-      letter.text.position.set(this.getCellSprite(this.currentColumnPosition, index).centerX, this.getCellSprite(this.currentColumnPosition, index).centerY)
+      const x = this.getCellSprite(this.currentColumnPosition, index).centerX
+      const y = this.getCellSprite(this.currentColumnPosition, index).centerY
+      letter.text.position.set(x + 30, y - 30)
+      letter.sprite.position.set(x, y - 60)
     })
   }
 
@@ -90,7 +102,7 @@ export class Matrix {
   }
 
   setCellSprite(i, j) {
-    const cellSprite = this.getLineSprite(i, j)
+    const cellSprite = this.setLineSprite(i, j)
     cellSprite.inputEnabled = true
     cellSprite.events.onInputDown.add(this.handleCellClick, this, 0, i, j)
     cellSprite.events.onInputOver.add(this.handleCellPointerOver, this, 0, i, j)
@@ -162,7 +174,7 @@ export class Matrix {
     sprite.tint = 0xffffff
   }
 
-  getLineSprite(i, j): Phaser.Sprite {
+  setLineSprite(i, j): Phaser.Sprite {
     const x =  200 + (TILE_SIZE.WIDTH * SCALE) * i
     const y =  j === 0 ? 130 : 130 + (TILE_SIZE.HEIGHT * SCALE * (j)) 
     const line: Phaser.Sprite = new Phaser.Sprite(this.game, x, y, 'mainAtlas');
@@ -179,6 +191,13 @@ export class Matrix {
     line.scale.y = SCALE
 
     return line
+  }
+
+  setBoxSprite(x, y): Phaser.Sprite {
+    const box: Phaser.Sprite = new Phaser.Sprite(this.game, x, y, 'mainAtlas', 'letter_1.png')
+    box.scale.set(SCALE)
+    this.game.add.existing(box)
+    return box
   }
 
 }
