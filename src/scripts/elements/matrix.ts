@@ -184,30 +184,36 @@ export class Matrix {
   }
 
   setSelectedControl(control) {
-    console.log('control id', control)
     this.selectedControl = control
     this.hightlightActive = true
   }
 
   setControl(cellPosition, control) {
+    console.log('control id', control)    
     const result = this.gameData.setCellWithRestrictions(cellPosition.x, cellPosition.y, control.id)
     if (result) {
-      this.cells[cellPosition.x][cellPosition.y].transformValue = control
-      const spritePosition = {
-        x: this.cells[cellPosition.x][cellPosition.y].sprite.x,
-        y: this.cells[cellPosition.x][cellPosition.y].sprite.y - 70
-
+      if (control.id === TRANSFORM_NONE) {
+        const index = this.placedControls.findIndex(control => {
+          return control.position.x === cellPosition.x
+        })
+        this.placedControls[index].sprite.destroy()
+        this.placedControls.splice(index, 1);
+      } else {
+        this.cells[cellPosition.x][cellPosition.y].transformValue = control
+        const spritePosition = {
+          x: this.cells[cellPosition.x][cellPosition.y].sprite.x,
+          y: this.cells[cellPosition.x][cellPosition.y].sprite.y - 70
+  
+        }
+        const controlSprite =  new Phaser.Sprite(this.game, 0, 0,  'mainAtlas', control.spriteInLine + '_0.png')
+        controlSprite.scale.set(SCALE)
+        controlSprite.position.set(spritePosition.x, spritePosition.y)
+        this.game.add.existing(controlSprite)
+        this.placedControls.push({sprite: controlSprite, position: cellPosition, key: control.spriteInLine})
+        this.placeControlSound.play()  
       }
-      const controlSprite =  new Phaser.Sprite(this.game, 0, 0,  'mainAtlas', control.spriteInLine + '_0.png')
-      controlSprite.scale.set(SCALE)
-      controlSprite.position.set(spritePosition.x, spritePosition.y)
-      this.game.add.existing(controlSprite)
-      this.placedControls.push({sprite: controlSprite, position: cellPosition, key: control.spriteInLine})
-      console.log(this.placedControls)
-      this.placeControlSound.play()  
     }
     this.gameData.debugPrintProblem()
-    //set graphic of control
   }
 
   getAvailableTiles(i, j) {

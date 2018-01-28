@@ -10,7 +10,7 @@ interface Control {
   y: number,
   sprite: Phaser.Sprite
   timer: Phaser.Timer,
-  spriteInLine: Phaser.Sprite
+  spriteInLine: string
 }
 
 interface Letter {

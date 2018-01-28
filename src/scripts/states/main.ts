@@ -95,10 +95,20 @@ export class MainState extends State {
 
   loadControls(): void {
     this.controls = [{
+      id: TRANSFORM_NONE,
+      name: 'Delete',
+	  sprite_base: 'btn_del',
+    spriteInLine: 'none',
+    sprite: new Phaser.Sprite(this.game, 0, 0),
+	  x: 16,
+	  y: 256,
+      timer:  this.game.time.create(false)      
+    },{
       id: TRANSFORM_SWAPDOWN,
       name: 'Swap',
+    sprite: new Phaser.Sprite(this.game, 0, 0),      
       sprite_base: 'btn_swap',
-	  spriteInLine: 'swap'
+	  spriteInLine: 'swap',
 	  x: 16,
 	  y: 48,
       timer:  this.game.time.create(false)
@@ -106,32 +116,28 @@ export class MainState extends State {
       id: TRANSFORM_CHANGECASE,
       name: 'Change Case',
 	  sprite_base: 'btn_case',
-	  spriteInLine: 'case'
+    spriteInLine: 'case',
+    sprite: new Phaser.Sprite(this.game, 0, 0),          
 	  x: 16,
 	  y: 100,
       timer:  this.game.time.create(false)      
     },{
       id: TRANSFORM_DECREMENT,
       name: 'Delete',
-	  sprite_base: 'btn_dec',
+    sprite_base: 'btn_dec',
+    sprite: new Phaser.Sprite(this.game, 0, 0),    
 	  x: 16,
-	  y: 152,
+    y: 152,
+    spriteInLine: 'dec',    
       timer:  this.game.time.create(false)      
     },{
       id: TRANSFORM_INCREMENT,
       name: 'Delete',
 	  sprite_base: 'btn_inc',
-	  spriteInLine: 'inc'
+    spriteInLine: 'inc',
+    sprite: new Phaser.Sprite(this.game, 0, 0),        
 	  x: 16,
 	  y: 204,
-      timer:  this.game.time.create(false)      
-    },{
-      id: TRANSFORM_NONE,
-      name: 'Delete',
-	  sprite_base: 'btn_del',
-	  spriteInLine: new Phaser.Sprite(this.game, 0, 0)
-	  x: 16,
-	  y: 256,
       timer:  this.game.time.create(false)      
     }]
 
