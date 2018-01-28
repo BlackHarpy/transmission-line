@@ -200,6 +200,7 @@
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
             <key type="filename">bg.png</key>
+            <key type="filename">splash.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -390,6 +391,7 @@
             <filename>frames3/btn_play_1.png</filename>
             <filename>frames3/btn_play_0.png</filename>
             <filename>bg.png</filename>
+            <filename>splash.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
