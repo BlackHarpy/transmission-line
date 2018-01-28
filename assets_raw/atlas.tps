@@ -199,6 +199,19 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
+            <key type="filename">bg.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>112,80,224,160</rect>
+                <key>scale9Paddings</key>
+                <rect>112,80,224,160</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">frames1/letter_0.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
@@ -376,6 +389,7 @@
             <filename>frames3/btn_del_0.png</filename>
             <filename>frames3/btn_play_1.png</filename>
             <filename>frames3/btn_play_0.png</filename>
+            <filename>bg.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
