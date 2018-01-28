@@ -1,7 +1,8 @@
-export const TRANSFORM_NONE		= 0;
-export const TRANSFORM_SWAPUP		= 1;
-export const TRANSFORM_SWAPDOWN	= 2;
-export const TRANSFORM_CHANGECASE	= 3;
+export const TRANSFORM_NONE			= 0;
+export const TRANSFORM_INCREMENT	= 1;
+export const TRANSFORM_DECREMENT	= 2;
+export const TRANSFORM_SWAPDOWN		= 3;
+export const TRANSFORM_CHANGECASE	= 4;
 
 export function GameData (w, h) {
 // function GameData (w, h) {
@@ -19,7 +20,7 @@ export function GameData (w, h) {
 
 	this.cellIsValid = function (x, y) {
 		if (x < 0 || x >= this.width)  return false;
-		if (y < 0 || x >= this.height) return false;
+		if (y < 0 || y >= this.height) return false;
 		return true;
 	};
 	
@@ -44,9 +45,10 @@ export function GameData (w, h) {
 		var cell = this.getCell(x, y);
 		switch (cell) {
 			case TRANSFORM_CHANGECASE:	return "C";
-			case TRANSFORM_SWAPUP: 		return "^";
 			case TRANSFORM_SWAPDOWN: 	return "v";
-			case TRANSFORM_NONE: 		return "-";
+			case TRANSFORM_DECREMENT: 	return "-";
+			case TRANSFORM_INCREMENT: 	return "+";
+			case TRANSFORM_NONE: 		return " ";
 		}
 		return "?";
 	};
@@ -65,8 +67,6 @@ export function GameData (w, h) {
 	
 	this.setCellWithRestrictions = function (x, y, val) {
 		if (!this.cellIsValid(x, y)) return false;
-		// Check if it´s a valid cell for a swap-up
-		if (y == 0 && val == TRANSFORM_SWAPUP) return false;
 		// Check if it´s a valid cell for a swap-down
 		if (y == this.height-1 && val == TRANSFORM_SWAPDOWN) return false;
 		// If val = TRANSFORM_NONE then we are erasing a cell. For all other cases we
@@ -109,12 +109,6 @@ export function GameData (w, h) {
 			var tform  = this.getCell (step, r);
 
 			switch (tform) {
-				case TRANSFORM_SWAPUP:
-					var l2 = input.charCodeAt(r - 1);
-					input = this. replaceStrChar (input, r - 1, input.charCodeAt (r));
-					input = this. replaceStrChar (input, r, l2);
-					break;
-
 				case TRANSFORM_SWAPDOWN:
 					var l2 = input.charCodeAt(r + 1);
 					input = this. replaceStrChar (input, r + 1, input.charCodeAt (r));
@@ -172,6 +166,14 @@ export function GameData (w, h) {
 		}
 		return inputWord;
 	};
+	
+	this.generateProblemSafe = function (theword, transforms) {
+		var input = theword;
+		while (input == theword) {
+			this.generateProblem (theword, transforms);
+		}
+		return input;
+	};
 
 	this.debugPrintProblem = function () {
 		console.log("Game Matrix");
@@ -184,3 +186,21 @@ export function GameData (w, h) {
 		}
 	};
 }
+
+function WordData () {
+	this.wordListPerLevel = [
+		"Hello"	, "Science"	, "Sword"	, "Kitten"	, "GameJam",
+		"Fail"	, "Help"	, "Question", "Basic"	, "IceCream",
+		"Phaser", "Shadow"	, "Wander"	, "Gaius"];
+
+	this.transformsPerLevel = [
+		[TRANSFORM_CHANGECASE , TRANSFORM_SWAPDOWN ],
+		[TRANSFORM_CHANGECASE , TRANSFORM_CHANGECASE	, TRANSFORM_SWAPDOWN ],
+		[TRANSFORM_CHANGECASE , TRANSFORM_CHANGECASE	, TRANSFORM_SWAPDOWN ],
+		[TRANSFORM_CHANGECASE , TRANSFORM_CHANGECASE	, TRANSFORM_SWAPDOWN	, TRANSFORM_INCREMENT	],
+		[TRANSFORM_CHANGECASE , TRANSFORM_DECREMENT		, TRANSFORM_SWAPDOWN	, TRANSFORM_DECREMENT	],
+		[TRANSFORM_DECREMENT  , TRANSFORM_CHANGECASE	, TRANSFORM_SWAPDOWN	, TRANSFORM_CHANGECASE, TRANSFORM_INCREMENT ],
+		[TRANSFORM_CHANGECASE , TRANSFORM_CHANGECASE	, TRANSFORM_SWAPDOWN	, TRANSFORM_CHANGECASE, TRANSFORM_SWAPDOWN ],
+	];
+}
+	
