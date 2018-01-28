@@ -267,6 +267,8 @@
             <key type="filename">frames3/btn_case_1.png</key>
             <key type="filename">frames3/btn_dec_0.png</key>
             <key type="filename">frames3/btn_dec_1.png</key>
+            <key type="filename">frames3/btn_del_0.png</key>
+            <key type="filename">frames3/btn_del_1.png</key>
             <key type="filename">frames3/btn_inc_0.png</key>
             <key type="filename">frames3/btn_inc_1.png</key>
             <key type="filename">frames3/btn_swap_0.png</key>
@@ -368,6 +370,8 @@
             <filename>frames4/table_normal.png</filename>
             <filename>frames4/table_bad.png</filename>
             <filename>frames4/table_good.png</filename>
+            <filename>frames3/btn_del_1.png</filename>
+            <filename>frames3/btn_del_0.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
