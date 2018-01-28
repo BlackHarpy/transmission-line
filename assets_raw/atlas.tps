@@ -271,6 +271,8 @@
             <key type="filename">frames3/btn_del_1.png</key>
             <key type="filename">frames3/btn_inc_0.png</key>
             <key type="filename">frames3/btn_inc_1.png</key>
+            <key type="filename">frames3/btn_play_0.png</key>
+            <key type="filename">frames3/btn_play_1.png</key>
             <key type="filename">frames3/btn_swap_0.png</key>
             <key type="filename">frames3/btn_swap_1.png</key>
             <struct type="IndividualSpriteSettings">
@@ -372,6 +374,8 @@
             <filename>frames4/table_good.png</filename>
             <filename>frames3/btn_del_1.png</filename>
             <filename>frames3/btn_del_0.png</filename>
+            <filename>frames3/btn_play_1.png</filename>
+            <filename>frames3/btn_play_0.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
