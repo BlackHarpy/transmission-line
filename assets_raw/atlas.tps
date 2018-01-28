@@ -315,6 +315,21 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">frames4/table_bad.png</key>
+            <key type="filename">frames4/table_good.png</key>
+            <key type="filename">frames4/table_normal.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>14,12,27,23</rect>
+                <key>scale9Paddings</key>
+                <rect>14,12,27,23</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
         </map>
         <key>fileList</key>
         <array>
@@ -350,6 +365,9 @@
             <filename>frames2/inc_1.png</filename>
             <filename>frames2/swap_0.png</filename>
             <filename>frames2/swap_1.png</filename>
+            <filename>frames4/table_normal.png</filename>
+            <filename>frames4/table_bad.png</filename>
+            <filename>frames4/table_good.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
