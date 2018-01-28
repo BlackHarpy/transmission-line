@@ -6,6 +6,7 @@ interface Control {
   id: number
   name: string,
   sprite: Phaser.Sprite
+  timer: Phaser.Timer
 }
 
 interface Letter {
