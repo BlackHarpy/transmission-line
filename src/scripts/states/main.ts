@@ -3,7 +3,7 @@
 import { State } from '../state'
 import { Matrix } from '../elements/matrix'
 import { MATRIX_SIZE, SCALE} from '../constants'
-import { TRANSFORM_NONE, TRANSFORM_SWAPDOWN, TRANSFORM_CHANGECASE, TRANSFORM_DECREMENT, TRANSFORM_INCREMENT } from '../../../testbed/gamebase.js'
+import { WordData, GameData, TRANSFORM_NONE, TRANSFORM_SWAPDOWN, TRANSFORM_CHANGECASE, TRANSFORM_DECREMENT, TRANSFORM_INCREMENT } from '../../../testbed/gamebase.js'
 
 const cursorImage = require('assets/test-sprite.gif')
 const tileTest = require('assets/block.png')
@@ -30,6 +30,8 @@ export class MainState extends State {
   selectControlSound: Phaser.Sound
   backgroundMusic: Phaser.Sound
   transmissionStarted: boolean
+  currentLevel: Number
+  words: WordData
 
   preload(): void {
    this.game.load.image('cursor', cursorImage)
@@ -41,9 +43,22 @@ export class MainState extends State {
    this.game.load.audio('removeControlSFX', removeControl)
   }
 
+  createProblem() : String {
+	let thisword    = this.words.getWordForLevel (this.currentLevel)
+	let transforms = this.words.getTransformsForLevel (this.currentLevel)
+	let problem : GameData = new GameData(this.words.getMaxNumberOfTransforms(), thisword.length)
+	return problem.generateProblemSafe (thisword, transforms)
+  }
+ 
   create(): void {
+    this.currentLevel = 0
+    this.words = new WordData();
+  	let bg : Phaser.Image = new Phaser.Image(this.game, 0, 0, 'mainAtlas', 'bg.png')
+  	bg.scale.set(SCALE)
+    this.game.add.existing(bg)
+
     this.loadControls()
-    this.setLines('prueba')
+    this.setLines(this.createProblem())
     this.setStartTimerButton()
     this.tintTimer =  this.game.time.create(false)
     this.movingBoxes = false
@@ -59,7 +74,8 @@ export class MainState extends State {
         this.movingBoxes = false
         this.transmissionStarted = false
         this.matrix.resetData()
-        this.setLines('GameJam')
+		this.currentLevel++
+        this.setLines(this.createProblem())
       })
     }
   }
@@ -95,15 +111,6 @@ export class MainState extends State {
 
   loadControls(): void {
     this.controls = [{
-      id: TRANSFORM_NONE,
-      name: 'Delete',
-	  sprite_base: 'btn_del',
-    spriteInLine: 'none',
-    sprite: new Phaser.Sprite(this.game, 0, 0),
-	  x: 16,
-	  y: 256,
-      timer:  this.game.time.create(false)      
-    },{
       id: TRANSFORM_SWAPDOWN,
       name: 'Swap',
     sprite: new Phaser.Sprite(this.game, 0, 0),      
@@ -139,7 +146,16 @@ export class MainState extends State {
 	  x: 16,
 	  y: 204,
       timer:  this.game.time.create(false)      
-    }]
+    },{
+      id: TRANSFORM_NONE,
+      name: 'Delete',
+	  sprite_base: 'btn_del',
+    spriteInLine: 'none',
+    sprite: new Phaser.Sprite(this.game, 0, 0),
+	  x: 16,
+	  y: 256,
+      timer:  this.game.time.create(false)      
+    },]
 
     this.controls.forEach(control => {
 	  control.sprite = new Phaser.Sprite(this.game, control.x, control.y, 'mainAtlas', control.sprite_base + '_0.png'),
