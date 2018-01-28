@@ -6,13 +6,15 @@ import 'p2'
 import 'phaser'
 
 import { MainState } from './states/main'
+import { SplashState } from './states/splash'
 
 export default class App extends Phaser.Game {
     constructor(config: Phaser.IGameConfig) {
       super(config)
-      //this.state.add('intro', IntroState)      
+      this.state.add('intro', SplashState)      
       this.state.add('main', MainState)
-      this.state.start('main')
+      
+      this.state.start('intro')
     }
   }
 
