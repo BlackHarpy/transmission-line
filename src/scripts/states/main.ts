@@ -57,7 +57,6 @@ export class MainState extends State {
       this.movingBoxes = true
       this.matrix.moveBoxesOut().then(result => {
         this.movingBoxes = false
-        console.log('done')
         this.transmissionStarted = false
         this.matrix.resetData()
         this.setLines('GameJam')
@@ -69,6 +68,7 @@ export class MainState extends State {
     this.matrix = new Matrix(this.game, MATRIX_SIZE.WIDTH, word.length)
     this.matrix.drawMatrix()
     this.matrix.initialize(word)
+    this.matrix.setSelectedControl(this.controls[0])
   }
 
   setStartTimerButton() {
@@ -89,38 +89,37 @@ export class MainState extends State {
 
   loadControls(): void {
     this.controls = [{
+        id: TRANSFORM_NONE,
+        name: 'Delete',
+        sprite: new Phaser.Sprite(this.game, 50, 110, 'cursor'),
+        timer:  this.game.time.create(false),
+        spriteInLine: new Phaser.Sprite(this.game, 50, 50, 'swap_0.png')      
+      },{
       id: TRANSFORM_SWAPDOWN,
       name: 'Swap',
       sprite: new Phaser.Sprite(this.game, 50, 50, 'cursor'),
-      timer:  this.game.time.create(false)
+      timer:  this.game.time.create(false),
+      spriteInLine: new Phaser.Sprite(this.game, 50, 50, 'cursor')
     },{
       id: TRANSFORM_CHANGECASE,
       name: 'Change Case',
       sprite: new Phaser.Sprite(this.game, 50, 80, 'cursor'),
-      timer:  this.game.time.create(false)      
-    },{
-      id: TRANSFORM_NONE,
-      name: 'Delete',
-      sprite: new Phaser.Sprite(this.game, 50, 110, 'cursor'),
-      timer:  this.game.time.create(false)      
+      timer: this.game.time.create(false),
+      spriteInLine: new Phaser.Sprite(this.game, 50, 50, 'case_0.png')
     }]
 
     this.controls.forEach(control => {
       this.game.add.existing(control.sprite)
       control.sprite.inputEnabled = true
-      control.sprite.events.onInputDown.add(this.handleClick, this, 0, control.id)
+      control.sprite.events.onInputDown.add(this.handleClick, this, 0, control)
       this.game.physics.enable(control.sprite, Phaser.Physics.ARCADE);
     })
   }
 
-  setEvents(): void {
-    this.testSprite.events.onInputDown.add(this.handleClick, this)
-  }
-
-  handleClick(sprite, pointer, id): void {
-    this.matrix.setSelectedControl(id)
+  handleClick(sprite, pointer, selected): void {
+    this.matrix.setSelectedControl(selected)
     this.controls.forEach(control => {
-      if (control.id !== id) {
+      if (control.id !== selected.id) {
         this.resetFocus(control)
       } else {
         this.selectControlSound.play()
