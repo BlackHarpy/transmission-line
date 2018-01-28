@@ -29,6 +29,7 @@ export class MainState extends State {
   movingBoxes: boolean
   selectControlSound: Phaser.Sound
   backgroundMusic: Phaser.Sound
+  transmissionStarted: boolean
 
   preload(): void {
    this.game.load.image('cursor', cursorImage)
@@ -46,6 +47,7 @@ export class MainState extends State {
     this.setStartTimerButton()
     this.tintTimer =  this.game.time.create(false)
     this.movingBoxes = false
+    this.transmissionStarted = false
     this.selectControlSound = this.game.add.sound('placeControl2SFX')
     this.backgroundMusic = this.game.add.sound('backgroundMusic')
   }
@@ -54,7 +56,11 @@ export class MainState extends State {
     if (!this.movingBoxes && this.matrix.endOfLine()) {
       this.movingBoxes = true
       this.matrix.moveBoxesOut().then(result => {
+        this.movingBoxes = false
         console.log('done')
+        this.transmissionStarted = false
+        this.matrix.resetData()
+        this.setLines('GameJam')
       })
     }
   }
@@ -68,13 +74,17 @@ export class MainState extends State {
   setStartTimerButton() {
     this.timer =  this.game.time.create(false)
     this.timer.loop(Phaser.Timer.SECOND, () => {
-      this.matrix.updateLettersPosition()
+      console.log('tick')
+      if (this.transmissionStarted) {
+        this.matrix.updateLettersPosition()
+      }
     })
+    this.timer.start()    
     this.startButton = this.game.add.button(50, 200, 'cursor', this.startTransmission, this)
   }
 
   startTransmission() {
-    this.timer.start()
+    this.transmissionStarted = true
   }
 
   loadControls(): void {
