@@ -2,12 +2,19 @@
 
 import { State } from '../state'
 import { Matrix } from '../elements/matrix'
+import { MATRIX_SIZE } from '../constants'
 import { TRANSFORM_NONE, TRANSFORM_SWAPDOWN, TRANSFORM_CHANGECASE } from '../../../testbed/gamebase.js'
 
 const cursorImage = require('assets/test-sprite.gif')
 const tileTest = require('assets/block.png')
 const atlasJson = require('assets/sprites.json')
 const atlasImage = require('assets/sprites.png')
+
+//audio
+const music = require('assets/music/test.ogg')
+const placeControl = require('assets/sfx/place_control.wav')
+const placeControl2 = require('assets/sfx/place_control2.wav')
+const removeControl = require('assets/sfx/remove_control.wav')
 
 
 export class MainState extends State {
@@ -17,34 +24,43 @@ export class MainState extends State {
   player: Player
   matrix: any
   timer: Phaser.Timer
-  
   startButton: Phaser.Button
   tintTimer: Phaser.Timer
+  selectControlSound: Phaser.Sound
+  backgroundMusic: Phaser.Sound
 
   preload(): void {
    this.game.load.image('cursor', cursorImage)
    this.game.load.image('tile', tileTest)
-   this.game.load.atlas('mainAtlas', atlasImage, atlasJson);
+   this.game.load.atlas('mainAtlas', atlasImage, atlasJson)
+   this.game.load.audio('backgroundMusic', music)
+   this.game.load.audio('placeControlSFX', placeControl)
+   this.game.load.audio('placeControl2SFX', placeControl2)
+   this.game.load.audio('removeControlSFX', removeControl)
   }
 
   create(): void {
-    this.setControls()
-    this.matrix = new Matrix(this.game, 5,5)
-    this.matrix.drawMatrix()
-    this.matrix.initialize('holas')
+    this.loadControls()
+    this.setLines('prueba')
     this.setStartTimerButton()
     this.tintTimer =  this.game.time.create(false)
-    
+    this.selectControlSound = this.game.add.sound('placeControl2SFX')
+    this.backgroundMusic = this.game.add.sound('backgroundMusic')
   }
 
   update(): void {
+    //console.log(this.matrix.endOfLine())
+  }
 
+  setLines(word) {
+    this.matrix = new Matrix(this.game, MATRIX_SIZE.WIDTH, MATRIX_SIZE.HEIGHT)
+    this.matrix.drawMatrix()
+    this.matrix.initialize(word)
   }
 
   setStartTimerButton() {
     this.timer =  this.game.time.create(false)
     this.timer.loop(Phaser.Timer.SECOND, () => {
-      console.log('tick')
       this.matrix.updateLettersPosition()
     })
     this.startButton = this.game.add.button(50, 200, 'cursor', this.startTransmission, this)
@@ -54,7 +70,7 @@ export class MainState extends State {
     this.timer.start()
   }
 
-  setControls(): void {
+  loadControls(): void {
     this.controls = [{
       id: TRANSFORM_SWAPDOWN,
       name: 'Swap',
@@ -90,6 +106,7 @@ export class MainState extends State {
       if (control.id !== id) {
         this.resetFocus(control)
       } else {
+        this.selectControlSound.play()
         this.hightlightControl(control)
       }
     })

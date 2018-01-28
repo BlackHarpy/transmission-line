@@ -11,4 +11,14 @@ export class Utils {
         })
       })
   }
+
+  static moveFowardTween(game, sprite, position) {
+    return new Promise<any>(resolve => {
+      const tween = game.add.tween(sprite).to({ x: position }, 500, "Linear", true)
+      tween.onComplete.add(() => {
+        resolve(true)
+      })
+    })
+  }
+
 }
