@@ -23,7 +23,9 @@ window.onload = () => {
       renderer:        Phaser.AUTO,       //Reseach further about Phaser.WEBGL_MULTI multi-texture rendering
       parent:          'content',
       resolution:      1,
-      forceSetTimeOut: false
+      forceSetTimeOut: false,
+      antialias: false,
+      crisp: true
     }
     new App(config)
 }
