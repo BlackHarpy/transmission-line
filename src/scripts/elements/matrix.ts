@@ -102,9 +102,11 @@ export class Matrix {
   updateLettersPosition() {
     if (this.currentColumnPosition + 1 < this.width) {
       this.currentColumnPosition++
+      
       this.moveLetters().then(resolve => {
+        this.applyTransformations()
+        
         Promise.all(this.turnOnControls()).then(result => {
-          this.applyTransformations()
         })  
       })
     } else {
