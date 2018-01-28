@@ -24,8 +24,7 @@ window.onload = () => {
       parent:          'content',
       resolution:      1,
       forceSetTimeOut: false,
-      antialias: false,
-      crisp: true
+      antialias: false
     }
     new App(config)
 }

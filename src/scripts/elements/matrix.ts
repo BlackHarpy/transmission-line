@@ -10,6 +10,7 @@ export class Matrix {
   width: number
   height: number
   currentColumnPosition: number
+  transmission: string
 
   constructor(game, width, height) {
     this.game = game
@@ -39,16 +40,33 @@ export class Matrix {
     })
   }
 
+  moveLetters() {
+    this.letters.forEach((letter, index) => {
+      letter.text.position.set(this.getCellSprite(this.currentColumnPosition,index).centerX, this.getCellSprite(this.currentColumnPosition,index).centerY)
+    })
+  }
+
   initialize(word) {
+    this.transmission = word
     const splitWord = word.split('')
+    this.currentColumnPosition = 0
     this.setLetters(splitWord)
   }
 
-  findLetterNextPosition(i, j) {
-
+  updateLettersPosition() {
+    if (this.currentColumnPosition + 1 < this.height) {
+      this.currentColumnPosition++
+      this.applyTransformations()
+      this.moveLetters()
+    }
   }
 
-  updatePosition() {
+  applyTransformations() {
+    this.transmission = this.gameData.applyTransforms(this.transmission, this.currentColumnPosition)
+    this.letters.forEach((letter, index) => {
+      letter.text.setText(this.transmission[index])
+    })
+    console.log(this.transmission)
   }
 
   drawMatrix() {
@@ -66,13 +84,14 @@ export class Matrix {
   }
 
   setControl(cellPosition, control) {
+    this.cells[cellPosition.x][cellPosition.y].transformValue = control
     this.gameData.setCell(cellPosition.x, cellPosition.y, control)
     //set graphic of control
   }
 
   setControlTest() {
-    this.setControl({x: 0, y: 0}, TRANSFORM_CHANGECASE)
-    console.log(this.gameData.getCell(0, 0))
-    console.log(this.gameData.applyTransforms('holas', 0))
+    this.setControl({x: 1, y: 0}, TRANSFORM_CHANGECASE)
+    this.setControl({x: 2, y: 1}, TRANSFORM_SWAPDOWN)
+    this.setControl({x: 4, y: 3}, TRANSFORM_SWAPUP)
   }
 }

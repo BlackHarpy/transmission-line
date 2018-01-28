@@ -40,7 +40,7 @@ export function GameData (w, h) {
 
 		if (charCode >= 'A' && charCode <=  'Z') {
 			copy = this.replaceStrChar (string, charNdx, 97 + string.charCodeAt(charNdx) - 65);
-		} else if (charCode >= 'a' && charCode <=  'a') {
+		} else if (charCode >= 'a' && charCode <=  'z') {
 			copy = this.replaceStrChar (string, charNdx, 65 + string.charCodeAt(charNdx) - 97);
 		}
 		return copy;
@@ -79,7 +79,6 @@ export function GameData (w, h) {
 	
 	this.applyTransforms = function (inStr, step) {
 		var input = inStr;
-		console.log('entrada', inStr)
 
 		if (input.length > this.height) {
 			console.log ("Cannot put the input string through the transform column! Word is too long.");
@@ -109,11 +108,9 @@ export function GameData (w, h) {
 					
 				case TRANSFORM_CHANGECASE:
 					input = this.changeCase (input, r);
-					console.log('changeCASE')
 					break;
 			}
 		}
-		console.log('hola te devuelvo esto', input)
 		return input;
 	};
 
