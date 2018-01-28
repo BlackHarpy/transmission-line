@@ -263,6 +263,14 @@
             <key type="filename">frames1/line_r_1.png</key>
             <key type="filename">frames1/line_r_2.png</key>
             <key type="filename">frames1/line_r_3.png</key>
+            <key type="filename">frames3/btn_case_0.png</key>
+            <key type="filename">frames3/btn_case_1.png</key>
+            <key type="filename">frames3/btn_dec_0.png</key>
+            <key type="filename">frames3/btn_dec_1.png</key>
+            <key type="filename">frames3/btn_inc_0.png</key>
+            <key type="filename">frames3/btn_inc_1.png</key>
+            <key type="filename">frames3/btn_swap_0.png</key>
+            <key type="filename">frames3/btn_swap_1.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -326,6 +334,14 @@
             <filename>frames1/letter_1.png</filename>
             <filename>frames1/letter_2.png</filename>
             <filename>frames1/letter_3.png</filename>
+            <filename>frames3/btn_case_0.png</filename>
+            <filename>frames3/btn_case_1.png</filename>
+            <filename>frames3/btn_dec_0.png</filename>
+            <filename>frames3/btn_dec_1.png</filename>
+            <filename>frames3/btn_inc_0.png</filename>
+            <filename>frames3/btn_inc_1.png</filename>
+            <filename>frames3/btn_swap_0.png</filename>
+            <filename>frames3/btn_swap_1.png</filename>
             <filename>frames2/case_0.png</filename>
             <filename>frames2/case_1.png</filename>
             <filename>frames2/dec_0.png</filename>
