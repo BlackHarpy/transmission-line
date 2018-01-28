@@ -12,6 +12,7 @@ export class Matrix {
   currentColumnPosition: number
   transmission: string
   selectedControl: number
+  hightlightTimer: Phaser.Timer
 
   constructor(game, width, height) {
     this.game = game
@@ -21,6 +22,7 @@ export class Matrix {
     this.cells = []
     this.letters = []
     this.currentColumnPosition = 0
+    this.hightlightTimer = this.game.time.create(false)
   }
 
   getCellSprite(i,j) {
@@ -87,12 +89,12 @@ export class Matrix {
     const cellSprite = new Phaser.Sprite(this.game, 100 + (TILE_SIZE.HEIGHT * (i + 1)), 100 + (TILE_SIZE.WIDTH * (j + 1)), 'tile')
     cellSprite.inputEnabled = true
     cellSprite.events.onInputDown.add(this.handleCellClick, this, 0, i, j)
+    cellSprite.events.onInputOver.add(this.handleCellPointerOver, this, 0, i, j)
+    cellSprite.events.onInputOut.add(this.handleCellPointerOut,  this, 0, i, j)
     return this.game.add.existing(cellSprite)
   }
 
-  handleCellClick(sprite, pointer, i, j) {
-    this.setControl({x: i, y: j}, this.selectedControl)
-  }
+  
 
   setSelectedControl(controlValue) {
     console.log('control id', controlValue)
@@ -106,4 +108,40 @@ export class Matrix {
     this.gameData.debugPrintProblem()
     //set graphic of control
   }
+
+  handleCellClick(sprite, pointer, i, j) {
+    this.setControl({x: i, y: j}, this.selectedControl)
+  }
+
+  handleCellPointerOver(sprite, pointer, i, j) {
+    console.log(i, j)
+    this.hightlightControl(sprite)
+
+  }
+
+  handleCellPointerOut(sprite, pointer, i, j) {
+    console.log(i, j)
+    this.resetFocus(sprite)
+
+  }
+
+  hightlightControl(sprite): void {
+    enum tints {
+      light = 0xffffff,
+      dark = 0x918e8c
+    }
+    let key: boolean = true
+    this.hightlightTimer.loop(Phaser.Timer.QUARTER / 2, () => {
+      key = !key
+      sprite.tint = key ? tints.dark : tints.light
+    })
+    this.hightlightTimer.start()
+  }
+
+  resetFocus(sprite): void {
+    this.hightlightTimer.stop()
+    sprite.tint = 0xffffff
+  }
+
+
 }
