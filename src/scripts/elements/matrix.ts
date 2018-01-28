@@ -96,8 +96,6 @@ export class Matrix {
     return this.game.add.existing(cellSprite)
   }
 
-  
-
   setSelectedControl(controlValue) {
     console.log('control id', controlValue)
     this.selectedControl = controlValue
@@ -107,17 +105,16 @@ export class Matrix {
   setControl(cellPosition, control) {
     this.cells[cellPosition.x][cellPosition.y].transformValue = control
     this.gameData.setCellWithRestrictions(cellPosition.x, cellPosition.y, control)
-    console.log(this.cells)
     this.gameData.debugPrintProblem()
     //set graphic of control
   }
 
   getAvailableTiles(i,j) {
-    let available = [this.cells[i][j].sprite]
+    let available = [this.cells[i][j]]
     switch (this.selectedControl) {
       case TRANSFORM_SWAPDOWN: 
         if (j < this.height - 1) {
-          available.push(this.cells[i][j + 1].sprite)
+          available.push(this.cells[i][j + 1])
         } else {
           available = []
         }
@@ -133,8 +130,7 @@ export class Matrix {
     if (this.hightlightActive) {
       const availableTiles = this.getAvailableTiles(i, j)
       availableTiles.forEach(tile => {
-        this.hightlightControl(tile)
-
+        this.hightlightControl(tile.sprite)
       })
     }
   }
@@ -142,7 +138,7 @@ export class Matrix {
   handleCellPointerOut(sprite, pointer, i, j) {
     const availableTiles = this.getAvailableTiles(i, j)
       availableTiles.forEach(tile => {
-        this.resetFocus(tile)
+        this.resetFocus(tile.sprite)
       })
   }
 
@@ -163,6 +159,5 @@ export class Matrix {
     this.hightlightTimer.stop()
     sprite.tint = 0xffffff
   }
-
 
 }

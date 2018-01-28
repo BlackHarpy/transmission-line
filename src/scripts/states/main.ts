@@ -17,6 +17,7 @@ export class MainState extends State {
   
   startButton: Phaser.Button
   tintTimer: Phaser.Timer
+  deleteControlButton: Phaser.Button
 
   preload(): void {
    this.game.load.image('cursor', cursorImage)
@@ -52,6 +53,7 @@ export class MainState extends State {
     //      line.scale.y = 2.0;
     //   }
     // }
+    this.deleteControlButton = this.game.add.button(50, 130, 'cursor', this.setDeleteControl, this)    
     
   }
 
@@ -66,6 +68,10 @@ export class MainState extends State {
       this.matrix.updateLettersPosition()
     })
     this.startButton = this.game.add.button(50, 110, 'cursor', this.startTransmission, this)
+  }
+
+  setDeleteControl() {
+    this.matrix.setSelectedControl(0)
   }
 
   startTransmission() {
