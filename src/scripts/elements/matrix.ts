@@ -34,6 +34,15 @@ export class Matrix {
     this.placeControlSound = this.game.add.sound('placeControlSFX')
   }
 
+  resetData() {
+    this.deleteLines()
+    this.deleteBoxes()
+    this.cells = []
+    this.letters = []
+    this.lineEndSprite = []
+    this.currentColumnPosition = 0    
+  }
+
   getCellSprite(i, j) {
     return this.cells[i][j].sprite
   }
@@ -274,6 +283,25 @@ export class Matrix {
 
   endOfLine(): boolean {
     return this.currentColumnPosition > this.width - 1
+  }
+
+  deleteBoxes() {
+    this.letters.forEach(box => {
+      box.sprite.destroy()
+      box.text.destroy()
+    })
+    this.letters = []
+  }
+
+  deleteLines() {
+    for (let i = 0; i < this.width; i++) {
+      for (let j = 0; j < this.height; j++) {
+        this.cells[i][j].sprite.destroy()
+        if (i === 0 || i === 1) {
+          this.lineEndSprite[i][j].destroy()
+        }
+      }
+    }
   }
 
 }
