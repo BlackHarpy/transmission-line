@@ -14,6 +14,9 @@ export class MainState extends State {
   player: Player
   matrix: any
   timer: Phaser.Timer
+  
+  startButton: Phaser.Button
+  tintTimer: Phaser.Timer
 
   preload(): void {
    this.game.load.image('cursor', cursorImage)
@@ -26,8 +29,9 @@ export class MainState extends State {
     this.matrix = new Matrix(this.game, 5,5)
     this.matrix.drawMatrix()
     this.matrix.initialize('holas')
-    this.matrix.setControlTest()
-
+    this.setStartTimerButton()
+    this.tintTimer =  this.game.time.create(false)
+    
     // example of adding a hardcoded line.
     // {
     //   const lineSize = 10;
@@ -48,34 +52,38 @@ export class MainState extends State {
     //      line.scale.y = 2.0;
     //   }
     // }
-    this.timer =  this.game.time.create(false)
-    this.timer.loop(Phaser.Timer.SECOND, () => {
-      console.log('tick')
-      this.matrix.updateLettersPosition()
-    })
-    this.timer.start()
+    
   }
 
   update(): void {
 
   }
 
+  setStartTimerButton() {
+    this.timer =  this.game.time.create(false)
+    this.timer.loop(Phaser.Timer.SECOND, () => {
+      console.log('tick')
+      this.matrix.updateLettersPosition()
+    })
+    this.startButton = this.game.add.button(50, 110, 'cursor', this.startTransmission, this)
+  }
+
+  startTransmission() {
+    this.timer.start()
+  }
+
   setControls(): void {
     this.controls = [{
-      id: 1,
+      id: 3,
       name: 'Control 1',
       sprite: new Phaser.Sprite(this.game, 50, 50, 'cursor')
-    },
-    {
-      id: 2,
-      name: 'Control 2',
-      sprite: new Phaser.Sprite(this.game, 50, 80, 'cursor')
     }]
 
     this.controls.forEach(control => {
       this.game.add.existing(control.sprite)
       control.sprite.inputEnabled = true
       control.sprite.events.onInputDown.add(this.handleClick, this, 0, control.id)
+      this.game.physics.enable(control.sprite, Phaser.Physics.ARCADE);
     })
   }
 
@@ -84,7 +92,27 @@ export class MainState extends State {
   }
 
   handleClick(sprite, pointer, id): void {
-    console.log('click one time', id)
+    this.matrix.setSelectedControl(id)
+    this.hightlightControl(this.controls[0].sprite)
+
+  }
+
+  hightlightControl(sprite): void {
+    enum tints {
+      light = 0xffffff,
+      dark = 0x918e8c
+    }
+    let key: boolean = true
+    this.tintTimer.loop(Phaser.Timer.QUARTER / 2, () => {
+      key = !key
+      sprite.tint = key ? tints.dark : tints.light
+    })
+    this.tintTimer.start()
+  }
+
+  resetFocus(sprite): void {
+    this.tintTimer.stop()
+    sprite.tint = 0xffffff
   }
 
 }

@@ -11,6 +11,7 @@ export class Matrix {
   height: number
   currentColumnPosition: number
   transmission: string
+  selectedControl: number
 
   constructor(game, width, height) {
     this.game = game
@@ -66,14 +67,13 @@ export class Matrix {
     this.letters.forEach((letter, index) => {
       letter.text.setText(this.transmission[index])
     })
-    console.log(this.transmission)
   }
 
   drawMatrix() {
     for(let i = 0; i < this.height; i++) {
       const row: Cell[] = []
       for(let j = 0; j < this.width; j++) {
-        const cell = this.game.add.sprite(100 + (75 * (i + 1)), 100 + (80 * (j + 1)), 'tile')
+        const cell = this.setCellSprite(i, j)
         row.push({
           transformValue: TRANSFORM_NONE,
           sprite: cell
@@ -83,15 +83,27 @@ export class Matrix {
     }
   }
 
+  setCellSprite(i, j) {
+    const cellSprite = new Phaser.Sprite(this.game, 100 + (TILE_SIZE.HEIGHT * (i + 1)), 100 + (TILE_SIZE.WIDTH * (j + 1)), 'tile')
+    cellSprite.inputEnabled = true
+    cellSprite.events.onInputDown.add(this.handleCellClick, this, 0, i, j)
+    return this.game.add.existing(cellSprite)
+  }
+
+  handleCellClick(sprite, pointer, i, j) {
+    this.setControl({x: i, y: j}, this.selectedControl)
+  }
+
+  setSelectedControl(controlValue) {
+    console.log('control id', controlValue)
+    this.selectedControl = controlValue
+  }
+
   setControl(cellPosition, control) {
     this.cells[cellPosition.x][cellPosition.y].transformValue = control
     this.gameData.setCell(cellPosition.x, cellPosition.y, control)
+    console.log(this.cells)
+    this.gameData.debugPrintProblem()
     //set graphic of control
-  }
-
-  setControlTest() {
-    this.setControl({x: 1, y: 0}, TRANSFORM_CHANGECASE)
-    this.setControl({x: 2, y: 1}, TRANSFORM_SWAPDOWN)
-    this.setControl({x: 4, y: 3}, TRANSFORM_SWAPUP)
   }
 }
