@@ -151,7 +151,7 @@ export function GameData (w, h) {
 		// Populate the matrix
 		for (var i = 0; i < transforms.length; i++) {
 			var rowRndBase  = 0;
-			var rowRndLimit = this.height;
+			var rowRndLimit = theword.length;
 			var col			= this.getRandomElement (availColumns);
 			var tform		= transforms[i];
 			
@@ -159,9 +159,9 @@ export function GameData (w, h) {
 			if (tform == TRANSFORM_SWAPUP) {
 				rowRndBase = 1;
 			}else if (tform == TRANSFORM_SWAPDOWN) {
-				rowRndLimit = this.height - 1;
+				rowRndLimit = theword.length - 1;
 			}
-			var row = parseInt(Math.random()*rowRndLimit) + rowRndBase;
+			var row = parseInt(Math.random()*(rowRndLimit - rowRndBase)) + rowRndBase;
 			this.setCell (col, row, tform);
 		}
 		
