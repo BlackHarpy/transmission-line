@@ -111,8 +111,28 @@ export function GameData (w, h) {
 			switch (tform) {
 				case TRANSFORM_SWAPDOWN:
 					var l2 = input.charCodeAt(r + 1);
-					input = this. replaceStrChar (input, r + 1, input.charCodeAt (r));
-					input = this. replaceStrChar (input, r, l2);
+					input = this.replaceStrChar (input, r + 1, input.charCodeAt (r));
+					input = this.replaceStrChar (input, r, l2);
+					break;
+					
+				case TRANSFORM_DECREMENT:
+					if (input[r] == 'a') {
+						input = this.replaceStrChar (input, r, 122); // a --> z
+					} else if (input[r] == 'A') {
+						input = this.replaceStrChar (input, r, 90);  // A --> Z
+					} else {
+						input = this.replaceStrChar (input, r, input.charCodeAt (r) - 1);
+					}
+					break;
+					
+				case TRANSFORM_INCREMENT:
+					if (input[r] == 'z') {
+						input = this.replaceStrChar (input, r, 97); // z --> a
+					} else if (input[r] == 'Z') {
+						input = this.replaceStrChar (input, r, 65);  // Z --> A
+					} else {
+						input = this.replaceStrChar (input, r, input.charCodeAt (r) + 1);
+					}
 					break;
 					
 				case TRANSFORM_CHANGECASE:
@@ -150,9 +170,7 @@ export function GameData (w, h) {
 			var tform		= transforms[i];
 			
 			//Special case: Swaps. They cannot pick first or last row, depending on their type
-			if (tform == TRANSFORM_SWAPUP) {
-				rowRndBase = 1;
-			}else if (tform == TRANSFORM_SWAPDOWN) {
+			if (tform == TRANSFORM_SWAPDOWN) {
 				rowRndLimit = theword.length - 1;
 			}
 			var row = parseInt(Math.random()*(rowRndLimit - rowRndBase)) + rowRndBase;
@@ -187,7 +205,7 @@ export function GameData (w, h) {
 	};
 }
 
-function WordData () {
+export function WordData () {
 	this.wordListPerLevel = [
 		"Hello"	, "Science"	, "Sword"	, "Kitten"	, "GameJam",
 		"Fail"	, "Help"	, "Question", "Basic"	, "IceCream",
@@ -199,8 +217,41 @@ function WordData () {
 		[TRANSFORM_CHANGECASE , TRANSFORM_CHANGECASE	, TRANSFORM_SWAPDOWN ],
 		[TRANSFORM_CHANGECASE , TRANSFORM_CHANGECASE	, TRANSFORM_SWAPDOWN	, TRANSFORM_INCREMENT	],
 		[TRANSFORM_CHANGECASE , TRANSFORM_DECREMENT		, TRANSFORM_SWAPDOWN	, TRANSFORM_DECREMENT	],
-		[TRANSFORM_DECREMENT  , TRANSFORM_CHANGECASE	, TRANSFORM_SWAPDOWN	, TRANSFORM_CHANGECASE, TRANSFORM_INCREMENT ],
-		[TRANSFORM_CHANGECASE , TRANSFORM_CHANGECASE	, TRANSFORM_SWAPDOWN	, TRANSFORM_CHANGECASE, TRANSFORM_SWAPDOWN ],
+		[TRANSFORM_DECREMENT  , TRANSFORM_CHANGECASE	, TRANSFORM_SWAPDOWN	, TRANSFORM_CHANGECASE	, TRANSFORM_INCREMENT ],
+		[TRANSFORM_CHANGECASE , TRANSFORM_CHANGECASE	, TRANSFORM_SWAPDOWN	, TRANSFORM_CHANGECASE	, TRANSFORM_SWAPDOWN ],
+		[TRANSFORM_CHANGECASE , TRANSFORM_SWAPDOWN		, TRANSFORM_SWAPDOWN	, TRANSFORM_SWAPDOWN	, TRANSFORM_INCREMENT, TRANSFORM_INCREMENT ]
 	];
+	
+	this.getWordForLevel = function (level) {
+		return this.wordListPerLevel [level % this.wordListPerLevel.length];
+	};
+	
+	this.getMaxWordLen = function () {
+		var maxlen = 0;
+
+		for (var i = 0; i < this.wordListPerLevel.length; i++) {
+			var word = this.wordListPerLevel[i];
+			if (word.length > maxlen) maxlen = word.length;
+		} 
+		return maxlen;
+	};
+	
+	this.getMaxNumberOfTransforms = function () {
+		var maxlen = 0;
+
+		for (var i = 0; i < this.transformsPerLevel.length; i++) {
+			var tform = this.transformsPerLevel[i];
+			if (tform.length > maxlen) maxlen = tform.length;
+		}
+		return maxlen;
+	};
+
+	this.getTransformsForLevel = function (level) {
+		if (level >= this.transformsPerLevel.length) {
+			this.transformsPerLevel [this.transformsPerLevel.length - 1];
+		} else {
+			return this.transformsPerLevel [level];
+		}
+	};
 }
 	
