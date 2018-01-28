@@ -106,7 +106,7 @@ export class Matrix {
 
   setControl(cellPosition, control) {
     this.cells[cellPosition.x][cellPosition.y].transformValue = control
-    this.gameData.setCell(cellPosition.x, cellPosition.y, control)
+    this.gameData.setCellWithRestrictions(cellPosition.x, cellPosition.y, control)
     console.log(this.cells)
     this.gameData.debugPrintProblem()
     //set graphic of control

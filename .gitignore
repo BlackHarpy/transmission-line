@@ -3,4 +3,4 @@ dist
 npm-debug.log
 .vscode
 public
-.mmpz.bak
+*.mmpz.bak

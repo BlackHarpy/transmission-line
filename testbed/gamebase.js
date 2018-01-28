@@ -9,12 +9,6 @@ export function GameData (w, h) {
 	this.height = h;
 	this.matrix = new Int8Array(w*h);
 
-	this.reset = function () {
-		for (var y = 0 ; y < this.height; y++) {
-			for (var x = 0; x < this.width; x++) this.setCell (x, y, TRANSFORM_NONE);
-		}
-	};
-
 	this.getCols = function () {
 		return this.width;
 	};
@@ -64,8 +58,29 @@ export function GameData (w, h) {
 	};
 
 	this.setCell = function (x, y, val) {
-		if (!this.cellIsValid(x, y)) return;
+		if (!this.cellIsValid(x, y)) return false;
 		this.matrix[y*this.width + x] = val;
+		return true;
+	};
+	
+	this.setCellWithRestrictions = function (x, y, val) {
+		if (!this.cellIsValid(x, y)) return false;
+		// Check if it´s a valid cell for a swap-up
+		if (y == 0 && val == TRANSFORM_SWAPUP) return false;
+		// Check if it´s a valid cell for a swap-down
+		if (y == this.height-1 && val == TRANSFORM_SWAPDOWN) return false;
+		// If val = TRANSFORM_NONE then we are erasing a cell. For all other cases we
+		// need to check that no other operations exist in the same column
+		if (val != TRANSFORM_NONE) {
+			for (var i = 0; i < this.height; i++) if (this.getCell(x, i) != TRANSFORM_NONE) return false;
+		}
+		return this.setCell (x, y, val);
+	};
+	
+	this.reset = function () {
+		for (var y = 0 ; y < this.height; y++) {
+			for (var x = 0; x < this.width; x++) this.setCell (x, y, TRANSFORM_NONE);
+		}
 	};
 
 	this.getRandomElement = function (arr) {
