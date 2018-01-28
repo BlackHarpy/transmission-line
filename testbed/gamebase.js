@@ -170,7 +170,7 @@ export function GameData (w, h) {
 	this.generateProblemSafe = function (theword, transforms) {
 		var input = theword;
 		while (input == theword) {
-			this.generateProblem (theword, transforms);
+			input = this.generateProblem (theword, transforms);
 		}
 		return input;
 	};
