@@ -1,6 +1,6 @@
 import { GameData } from '../../../testbed/gamebase.js'
 import { Utils } from './utils'
-import { TILE_SIZE, SCALE } from '../constants'
+import { TILE_SIZE, SCALE, START_POINT, LINE_SPACE, MATRIX_START_X } from '../constants'
 import { TRANSFORM_NONE, TRANSFORM_SWAPUP, TRANSFORM_SWAPDOWN, TRANSFORM_CHANGECASE } from '../../../testbed/gamebase.js'
 
 export class Matrix {
@@ -16,6 +16,8 @@ export class Matrix {
   hightlightActive: boolean
   hightlightTimer: Phaser.Timer
   textStyle: Phaser.PhaserTextStyle
+  placeControlSound: Phaser.Sound
+  lineEndSprite: Phaser.Sprite[][]
 
   constructor(game, width, height) {
     this.game = game
@@ -24,10 +26,12 @@ export class Matrix {
     this.height = height
     this.cells = []
     this.letters = []
+    this.lineEndSprite = []
     this.currentColumnPosition = 0
     this.hightlightTimer = this.game.time.create(false)
     this.hightlightActive = false
     this.textStyle = { font: "22px Courier", fill: "#fff", strokeThickness: 4 }
+    this.placeControlSound = this.game.add.sound('placeControlSFX')
   }
 
   getCellSprite(i, j) {
@@ -36,16 +40,17 @@ export class Matrix {
 
   setLetters(splitWord) {
     splitWord.forEach((character, index) => {
-      const x = this.getCellSprite(0, index).centerX - 100
-      const y = this.getCellSprite(0, index).centerY - 60
+      const x = this.lineEndSprite[0][index].centerX
+      const y = this.lineEndSprite[0][index].centerY - 30
 
       const spriteCharacter = new Phaser.Text(this.game, 0, 0, character, this.textStyle)
       const boxSprite = this.setBoxSprite(x, 0)   
+      boxSprite.anchor.set(0.5, 0.5)
 
       Utils.createFallTween(this.game, boxSprite, y)
 
       spriteCharacter.anchor.set(0.5, 0.5)      
-      spriteCharacter.position.set(boxSprite.centerX, y + 25)
+      spriteCharacter.position.set(boxSprite.centerX, y)
       this.game.add.existing(spriteCharacter)
 
       this.letters.push({
@@ -57,11 +62,18 @@ export class Matrix {
   }
 
   moveLetters() {
+    const promises = []
+    this.startLinesAnimation()
     this.letters.forEach((letter, index) => {
       const x = this.getCellSprite(this.currentColumnPosition, index).centerX
       const y = this.getCellSprite(this.currentColumnPosition, index).centerY
-      letter.text.position.set(x + 30, y - 30)
-      letter.sprite.position.set(x, y - 60)
+      //letter.text.position.set(x + 30, y - 30)
+      //letter.sprite.position.set(x, y - 60)
+      promises.push(Utils.moveFowardTween(this.game, letter.text, x))
+      promises.push(Utils.moveFowardTween(this.game, letter.sprite, x))
+    })
+    Promise.all(promises).then(resolve => {
+      this.stopLinesAnimation()
     })
   }
 
@@ -73,10 +85,12 @@ export class Matrix {
   }
 
   updateLettersPosition() {
-    if (this.currentColumnPosition + 1 < this.height) {
+    if (this.currentColumnPosition + 1 < this.width) {
       this.currentColumnPosition++
       this.applyTransformations()
       this.moveLetters()
+    } else {
+      this.currentColumnPosition++
     }
   }
 
@@ -88,9 +102,10 @@ export class Matrix {
   }
 
   drawMatrix() {
-    for (let i = 0; i < this.height; i++) {
+    this.addEndsOfLinesSprites()
+    for (let i = 0; i < this.width; i++) {
       const row: Cell[] = []
-      for (let j = 0; j < this.width; j++) {
+      for (let j = 0; j < this.height; j++) {
         const cell = this.setCellSprite(i, j)
         row.push({
           transformValue: TRANSFORM_NONE,
@@ -99,6 +114,31 @@ export class Matrix {
       }
       this.cells.push(row)
     }
+  }
+
+  addEndsOfLinesSprites() {
+    const left = []
+    const right = []    
+    for(let i = 0; i < this.height; i++) {
+      const x = START_POINT.X
+      const y = START_POINT.Y + (LINE_SPACE * i)
+      const line: Phaser.Sprite = new Phaser.Sprite(this.game, x, y, 'mainAtlas', 'line_l_0.png');
+      line.scale.set(SCALE)
+      line.animations.add('move', ['line_l_0.png', 'line_l_1.png', 'line_l_2.png'], 10, true)
+      this.game.add.existing(line)
+      left.push(line)            
+    }
+    this.lineEndSprite.push(left)
+    for(let i = 0; i < this.height; i++) {
+      const x = START_POINT.X + (TILE_SIZE.WIDTH * SCALE * (this.width + 1))
+      const y = START_POINT.Y + (LINE_SPACE * i)
+      const line: Phaser.Sprite = new Phaser.Sprite(this.game, x, y, 'mainAtlas', 'line_r_0.png');
+      line.scale.set(SCALE)
+      line.animations.add('move', ['line_r_0.png', 'line_r_1.png', 'line_r_2.png'], 10, true)
+      this.game.add.existing(line)
+      right.push(line)            
+    }
+    this.lineEndSprite.push(right)
   }
 
   setCellSprite(i, j) {
@@ -114,11 +154,16 @@ export class Matrix {
     console.log('control id', controlValue)
     this.selectedControl = controlValue
     this.hightlightActive = true
+    this.game
   }
 
   setControl(cellPosition, control) {
-    this.cells[cellPosition.x][cellPosition.y].transformValue = control
-    this.gameData.setCellWithRestrictions(cellPosition.x, cellPosition.y, control)
+    const result = this.gameData.setCellWithRestrictions(cellPosition.x, cellPosition.y, control)
+    console.log(cellPosition)
+    if (result) {
+      this.cells[cellPosition.x][cellPosition.y].transformValue = control    
+      this.placeControlSound.play()  
+    }
     this.gameData.debugPrintProblem()
     //set graphic of control
   }
@@ -175,21 +220,11 @@ export class Matrix {
   }
 
   setLineSprite(i, j): Phaser.Sprite {
-    const x =  200 + (TILE_SIZE.WIDTH * SCALE) * i
-    const y =  j === 0 ? 130 : 130 + (TILE_SIZE.HEIGHT * SCALE * (j)) 
-    const line: Phaser.Sprite = new Phaser.Sprite(this.game, x, y, 'mainAtlas');
-    if (i === 0)
-      line.animations.add('move', ['line_l_0.png', 'line_l_1.png', 'line_l_2.png'], 10, true)
-    else if (i === (this.width - 1))
-      line.animations.add('move', ['line_r_0.png', 'line_r_1.png', 'line_r_2.png'], 10, true)
-    else
-      line.animations.add('move', ['line_m_0.png', 'line_m_1.png', 'line_m_2.png'], 10, true)
-    line.animations.play('move');
-
-    // Maybe scale the game instead of the game object?
-    line.scale.x = SCALE
-    line.scale.y = SCALE
-
+    const x =  MATRIX_START_X + (TILE_SIZE.WIDTH * SCALE) * i
+    const y =  j === 0 ? START_POINT.Y : START_POINT.Y + (LINE_SPACE * (j)) 
+    const line: Phaser.Sprite = new Phaser.Sprite(this.game, x, y, 'mainAtlas',  'line_m_1.png');
+    line.animations.add('move', ['line_m_0.png', 'line_m_1.png', 'line_m_2.png'], 10, true)
+    line.scale.set(SCALE)
     return line
   }
 
@@ -198,6 +233,47 @@ export class Matrix {
     box.scale.set(SCALE)
     this.game.add.existing(box)
     return box
+  }
+
+  moveBoxesOut() {
+    return new Promise(resolve => {
+      const promises = []
+      this.letters.forEach(letter => {
+        promises.push(Utils.moveFowardTween(this.game, letter.sprite, letter.sprite.x + 150))        
+        promises.push(Utils.moveFowardTween(this.game, letter.text, letter.sprite.x + 150))
+      })
+  
+      Promise.all(promises).then(result => {
+        resolve(true)
+      })
+    })    
+  }
+
+  startLinesAnimation() {
+    for (let i = 0; i < this.width; i++) {
+      for (let j = 0; j < this.height; j++) {
+        this.cells[i][j].sprite.animations.play('move')
+        if (i === 0 || i === 1) {
+          this.lineEndSprite[i][j].animations.play('move')
+        }
+      }
+    }
+
+  }
+
+  stopLinesAnimation() {
+    for (let i = 0; i < this.width; i++) {
+      for (let j = 0; j < this.height; j++) {
+        this.cells[i][j].sprite.animations.stop('move')
+        if (i === 0 || i === 1) {
+          this.lineEndSprite[i][j].animations.stop('move')
+        }
+      }
+    }
+  }
+
+  endOfLine(): boolean {
+    return this.currentColumnPosition > this.width - 1
   }
 
 }
