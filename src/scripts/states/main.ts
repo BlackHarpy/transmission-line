@@ -32,6 +32,7 @@ export class MainState extends State {
   transmissionStarted: boolean
   currentLevel: number
   words: WordData
+  endTriggered: boolean
 
   preload(): void {
    this.game.load.image('cursor', cursorImage)
@@ -51,6 +52,7 @@ export class MainState extends State {
   }
  
   create(): void {
+    this.endTriggered = false
     this.currentLevel = 0
     this.words = new WordData();
   	let bg : Phaser.Image = new Phaser.Image(this.game, 0, 0, 'mainAtlas', 'bg.png')
@@ -68,15 +70,23 @@ export class MainState extends State {
     this.backgroundMusic.play('', 0, 1, true)
   }
 
+  
+  
+  nextLevel() : void {
+    this.matrix.resetData()
+	this.currentLevel++
+	this.endTriggered = false
+	this.setLines(this.createProblem())
+  }
+ 
   update(): void {
-    if (!this.movingBoxes && this.matrix.endOfLine()) {
+    if (!this.movingBoxes && this.matrix.endOfLine() && !this.endTriggered) {
       this.movingBoxes = true
       this.matrix.moveBoxesOut().then(result => {
         this.movingBoxes = false
         this.transmissionStarted = false
-        this.matrix.resetData()
-		this.currentLevel++
-        this.setLines(this.createProblem())
+		this.endTriggered = true
+		this.game.time.events.add(Phaser.Timer.SECOND * 4, this.nextLevel, this)
       })
     }
   }

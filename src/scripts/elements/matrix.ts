@@ -156,7 +156,7 @@ export class Matrix {
 
   addRecievers() {
     for(let i = 0; i < this.height; i++) {
-      const x = START_POINT.X + (TILE_SIZE.WIDTH * SCALE * (this.width + 2))
+      const x = START_POINT.X + (TILE_SIZE.WIDTH * SCALE * (this.width + 2) + 32)
       const y = START_POINT.Y - 40 + (LINE_SPACE * i)
       const line: Phaser.Sprite = new Phaser.Sprite(this.game, x, y, 'mainAtlas', 'table_normal.png');
       line.scale.set(SCALE)
