@@ -20,6 +20,7 @@ export class Matrix {
   lineEndSprite: Phaser.Sprite[][]
   placedControls: any[]
   recievers: Phaser.Sprite[]
+  solutionLetters: Phaser.Text[]
 
   constructor(game, width, height) {
     this.game = game
@@ -31,6 +32,7 @@ export class Matrix {
     this.lineEndSprite = []
     this.placedControls = []
     this.recievers = []
+    this.solutionLetters = []
     this.currentColumnPosition = 0
     this.hightlightTimer = this.game.time.create(false)
     this.hightlightActive = false
@@ -161,8 +163,17 @@ export class Matrix {
       const line: Phaser.Sprite = new Phaser.Sprite(this.game, x, y, 'mainAtlas', 'table_normal.png');
       line.scale.set(SCALE)
       this.game.add.existing(line)
-      this.recievers.push(line)            
+      this.recievers.push(line) 
+      let text =  new Phaser.Text(this.game, x + 16, y + 52, '', this.textStyle)
+      this.solutionLetters.push(text)  
+	  this.game.add.existing(text)	  
     }
+  }
+
+  setSolution(word) {
+	for(let i = 0; i < word.length; i++) {
+		this.solutionLetters[i].text = word[i]
+	}
   }
 
   addEndsOfLinesSprites() {

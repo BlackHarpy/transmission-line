@@ -44,11 +44,13 @@ export class MainState extends State {
    this.game.load.audio('removeControlSFX', removeControl)
   }
 
-  createProblem() : String {
+  createProblem() {
 	let thisword    = this.words.getWordForLevel (this.currentLevel)
 	let transforms = this.words.getTransformsForLevel (this.currentLevel)
 	let problem : GameData = new GameData(this.words.getMaxNumberOfTransforms(), thisword.length)
-	return problem.generateProblemSafe (thisword, transforms)
+	let input = problem.generateProblemSafe (thisword, transforms)
+	this.setLines (input)
+	this.matrix.setSolution(thisword)
   }
  
   create(): void {
@@ -60,7 +62,7 @@ export class MainState extends State {
     this.game.add.existing(bg)
 
     this.loadControls()
-    this.setLines(this.createProblem())
+	this.createProblem()
     this.setStartTimerButton()
     this.tintTimer =  this.game.time.create(false)
     this.movingBoxes = false
@@ -76,7 +78,7 @@ export class MainState extends State {
     this.matrix.resetData()
 	this.currentLevel++
 	this.endTriggered = false
-	this.setLines(this.createProblem())
+	this.createProblem()
   }
  
   update(): void {
