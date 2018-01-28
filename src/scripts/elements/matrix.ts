@@ -62,15 +62,18 @@ export class Matrix {
   }
 
   moveLetters() {
+    const promises = []
+    this.startLinesAnimation()
     this.letters.forEach((letter, index) => {
       const x = this.getCellSprite(this.currentColumnPosition, index).centerX
       const y = this.getCellSprite(this.currentColumnPosition, index).centerY
       //letter.text.position.set(x + 30, y - 30)
       //letter.sprite.position.set(x, y - 60)
-      Utils.moveFowardTween(this.game, letter.text, x)
-      Utils.moveFowardTween(this.game, letter.sprite, x).then(resolve => {
-
-      })
+      promises.push(Utils.moveFowardTween(this.game, letter.text, x))
+      promises.push(Utils.moveFowardTween(this.game, letter.sprite, x))
+    })
+    Promise.all(promises).then(resolve => {
+      this.stopLinesAnimation()
     })
   }
 
@@ -82,10 +85,12 @@ export class Matrix {
   }
 
   updateLettersPosition() {
-    if (this.currentColumnPosition + 1 < this.height) {
+    if (this.currentColumnPosition + 1 < this.width) {
       this.currentColumnPosition++
       this.applyTransformations()
       this.moveLetters()
+    } else {
+      this.currentColumnPosition++
     }
   }
 
@@ -154,6 +159,7 @@ export class Matrix {
 
   setControl(cellPosition, control) {
     const result = this.gameData.setCellWithRestrictions(cellPosition.x, cellPosition.y, control)
+    console.log(cellPosition)
     if (result) {
       this.cells[cellPosition.x][cellPosition.y].transformValue = control    
       this.placeControlSound.play()  
@@ -218,18 +224,7 @@ export class Matrix {
     const y =  j === 0 ? START_POINT.Y : START_POINT.Y + (LINE_SPACE * (j)) 
     const line: Phaser.Sprite = new Phaser.Sprite(this.game, x, y, 'mainAtlas',  'line_m_1.png');
     line.animations.add('move', ['line_m_0.png', 'line_m_1.png', 'line_m_2.png'], 10, true)
-    
-    // if (i === 0)
-    //   line.animations.add('move', ['line_l_0.png', 'line_l_1.png', 'line_l_2.png'], 10, true)
-    // else if (i === (this.width - 1))
-    //   line.animations.add('move', ['line_r_0.png', 'line_r_1.png', 'line_r_2.png'], 10, true)
-    // else
-    //   line.animations.add('move', ['line_m_0.png', 'line_m_1.png', 'line_m_2.png'], 10, true)
-    //line.animations.play('move');
-
-    // Maybe scale the game instead of the game object?
     line.scale.set(SCALE)
-
     return line
   }
 
@@ -240,8 +235,45 @@ export class Matrix {
     return box
   }
 
+  moveBoxesOut() {
+    return new Promise(resolve => {
+      const promises = []
+      this.letters.forEach(letter => {
+        promises.push(Utils.moveFowardTween(this.game, letter.sprite, letter.sprite.x + 150))        
+        promises.push(Utils.moveFowardTween(this.game, letter.text, letter.sprite.x + 150))
+      })
+  
+      Promise.all(promises).then(result => {
+        resolve(true)
+      })
+    })    
+  }
+
+  startLinesAnimation() {
+    for (let i = 0; i < this.width; i++) {
+      for (let j = 0; j < this.height; j++) {
+        this.cells[i][j].sprite.animations.play('move')
+        if (i === 0 || i === 1) {
+          this.lineEndSprite[i][j].animations.play('move')
+        }
+      }
+    }
+
+  }
+
+  stopLinesAnimation() {
+    for (let i = 0; i < this.width; i++) {
+      for (let j = 0; j < this.height; j++) {
+        this.cells[i][j].sprite.animations.stop('move')
+        if (i === 0 || i === 1) {
+          this.lineEndSprite[i][j].animations.stop('move')
+        }
+      }
+    }
+  }
+
   endOfLine(): boolean {
-    return this.currentColumnPosition === this.width - 1
+    return this.currentColumnPosition > this.width - 1
   }
 
 }

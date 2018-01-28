@@ -26,6 +26,7 @@ export class MainState extends State {
   timer: Phaser.Timer
   startButton: Phaser.Button
   tintTimer: Phaser.Timer
+  movingBoxes: boolean
   selectControlSound: Phaser.Sound
   backgroundMusic: Phaser.Sound
 
@@ -44,16 +45,22 @@ export class MainState extends State {
     this.setLines('prueba')
     this.setStartTimerButton()
     this.tintTimer =  this.game.time.create(false)
+    this.movingBoxes = false
     this.selectControlSound = this.game.add.sound('placeControl2SFX')
     this.backgroundMusic = this.game.add.sound('backgroundMusic')
   }
 
   update(): void {
-    //console.log(this.matrix.endOfLine())
+    if (!this.movingBoxes && this.matrix.endOfLine()) {
+      this.movingBoxes = true
+      this.matrix.moveBoxesOut().then(result => {
+        console.log('done')
+      })
+    }
   }
 
   setLines(word) {
-    this.matrix = new Matrix(this.game, MATRIX_SIZE.WIDTH, MATRIX_SIZE.HEIGHT)
+    this.matrix = new Matrix(this.game, MATRIX_SIZE.WIDTH, word.length)
     this.matrix.drawMatrix()
     this.matrix.initialize(word)
   }
