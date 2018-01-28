@@ -65,6 +65,7 @@ export class MainState extends State {
     this.transmissionStarted = false
     this.selectControlSound = this.game.add.sound('placeControl2SFX')
     this.backgroundMusic = this.game.add.sound('backgroundMusic')
+    this.backgroundMusic.play('', 0, 1, true)
   }
 
   update(): void {
