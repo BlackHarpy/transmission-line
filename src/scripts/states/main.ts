@@ -2,10 +2,13 @@
 
 import { State } from '../state'
 import { Matrix } from '../elements/matrix'
+import { TRANSFORM_NONE, TRANSFORM_SWAPDOWN, TRANSFORM_CHANGECASE } from '../../../testbed/gamebase.js'
+
 const cursorImage = require('assets/test-sprite.gif')
 const tileTest = require('assets/block.png')
 const atlasJson = require('assets/sprites.json')
 const atlasImage = require('assets/sprites.png')
+
 
 export class MainState extends State {
   testSprite: Phaser.Sprite
@@ -17,7 +20,6 @@ export class MainState extends State {
   
   startButton: Phaser.Button
   tintTimer: Phaser.Timer
-  deleteControlButton: Phaser.Button
 
   preload(): void {
    this.game.load.image('cursor', cursorImage)
@@ -33,28 +35,6 @@ export class MainState extends State {
     this.setStartTimerButton()
     this.tintTimer =  this.game.time.create(false)
     
-    // example of adding a hardcoded line.
-    // {
-    //   const lineSize = 10;
-    //   for (let i = 0; i < lineSize; ++i)
-    //   {
-    //     let line : Phaser.Sprite = this.game.add.sprite(100 + 64 * i, 100, 'mainAtlas');
-    //     if (i === 0)
-    //       line.animations.add('move', ['line_l_0.png', 'line_l_1.png', 'line_l_2.png'], 10, true)
-    //     else if (i === (lineSize - 1))
-    //       line.animations.add('move', ['line_r_0.png', 'line_r_1.png', 'line_r_2.png'], 10, true)
-    //     else
-    //       line.animations.add('move', ['line_m_0.png', 'line_m_1.png', 'line_m_2.png'], 10, true)
-  
-    //      line.animations.play('move');
-         
-    //      // Maybe scale the game instead of the game object?
-    //      line.scale.x = 2.0;
-    //      line.scale.y = 2.0;
-    //   }
-    // }
-    this.deleteControlButton = this.game.add.button(50, 130, 'cursor', this.setDeleteControl, this)    
-    
   }
 
   update(): void {
@@ -67,11 +47,7 @@ export class MainState extends State {
       console.log('tick')
       this.matrix.updateLettersPosition()
     })
-    this.startButton = this.game.add.button(50, 110, 'cursor', this.startTransmission, this)
-  }
-
-  setDeleteControl() {
-    this.matrix.setSelectedControl(0)
+    this.startButton = this.game.add.button(50, 200, 'cursor', this.startTransmission, this)
   }
 
   startTransmission() {
@@ -80,13 +56,20 @@ export class MainState extends State {
 
   setControls(): void {
     this.controls = [{
-      id: 2,
-      name: 'Control 1',
-      sprite: new Phaser.Sprite(this.game, 50, 50, 'cursor')
+      id: TRANSFORM_SWAPDOWN,
+      name: 'Swap',
+      sprite: new Phaser.Sprite(this.game, 50, 50, 'cursor'),
+      timer:  this.game.time.create(false)
     },{
-      id: 3,
-      name: 'Control 1',
-      sprite: new Phaser.Sprite(this.game, 50, 80, 'cursor')
+      id: TRANSFORM_CHANGECASE,
+      name: 'Change Case',
+      sprite: new Phaser.Sprite(this.game, 50, 80, 'cursor'),
+      timer:  this.game.time.create(false)      
+    },{
+      id: TRANSFORM_NONE,
+      name: 'Delete',
+      sprite: new Phaser.Sprite(this.game, 50, 110, 'cursor'),
+      timer:  this.game.time.create(false)      
     }]
 
     this.controls.forEach(control => {
@@ -103,26 +86,37 @@ export class MainState extends State {
 
   handleClick(sprite, pointer, id): void {
     this.matrix.setSelectedControl(id)
-    this.hightlightControl(this.controls[0].sprite)
-
+    this.controls.forEach(control => {
+      if (control.id !== id) {
+        this.resetFocus(control)
+      } else {
+        this.hightlightControl(control)
+      }
+    })
   }
 
-  hightlightControl(sprite): void {
+  getControlById(id) {
+    return this.controls.find(control => {
+      return control.id === id
+    })
+  }
+
+  hightlightControl(control): void {
     enum tints {
       light = 0xffffff,
       dark = 0x918e8c
     }
     let key: boolean = true
-    this.tintTimer.loop(Phaser.Timer.QUARTER / 2, () => {
+    control.timer.loop(Phaser.Timer.QUARTER / 2, () => {
       key = !key
-      sprite.tint = key ? tints.dark : tints.light
+      control.sprite.tint = key ? tints.dark : tints.light
     })
-    this.tintTimer.start()
+    control.timer.start()
   }
 
-  resetFocus(sprite): void {
-    this.tintTimer.stop()
-    sprite.tint = 0xffffff
+  resetFocus(control): void {
+    control.timer.stop()
+    control.sprite.tint = 0xffffff
   }
 
 }
