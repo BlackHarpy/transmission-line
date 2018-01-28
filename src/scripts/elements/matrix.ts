@@ -1,6 +1,6 @@
 import { GameData } from '../../../testbed/gamebase.js'
-import { TILE_SIZE } from '../constants'
-import {TRANSFORM_NONE, TRANSFORM_SWAPUP, TRANSFORM_SWAPDOWN, TRANSFORM_CHANGECASE} from '../../../testbed/gamebase.js'
+import { TILE_SIZE, SCALE } from '../constants'
+import { TRANSFORM_NONE, TRANSFORM_SWAPUP, TRANSFORM_SWAPDOWN, TRANSFORM_CHANGECASE } from '../../../testbed/gamebase.js'
 
 export class Matrix {
   game: Phaser.Game
@@ -29,7 +29,7 @@ export class Matrix {
     this.textStyle = { font: "22px Courier", fill: "#fff", strokeThickness: 4 }
   }
 
-  getCellSprite(i,j) {
+  getCellSprite(i, j) {
     return this.cells[i][j].sprite
   }
 
@@ -37,7 +37,7 @@ export class Matrix {
     splitWord.forEach((character, index) => {
       var spriteCharacter = new Phaser.Text(this.game, 0, 0, character, this.textStyle)
       spriteCharacter.anchor.set(0.5, 0.5)
-      spriteCharacter.position.set(this.getCellSprite(0,index).centerX - 80, this.getCellSprite(0,index).centerY)
+      spriteCharacter.position.set(this.getCellSprite(0, index).centerX - 80, this.getCellSprite(0, index).centerY)
       this.game.add.existing(spriteCharacter)
       this.letters.push({
         value: character,
@@ -49,7 +49,7 @@ export class Matrix {
 
   moveLetters() {
     this.letters.forEach((letter, index) => {
-      letter.text.position.set(this.getCellSprite(this.currentColumnPosition,index).centerX, this.getCellSprite(this.currentColumnPosition,index).centerY)
+      letter.text.position.set(this.getCellSprite(this.currentColumnPosition, index).centerX, this.getCellSprite(this.currentColumnPosition, index).centerY)
     })
   }
 
@@ -76,9 +76,9 @@ export class Matrix {
   }
 
   drawMatrix() {
-    for(let i = 0; i < this.height; i++) {
+    for (let i = 0; i < this.height; i++) {
       const row: Cell[] = []
-      for(let j = 0; j < this.width; j++) {
+      for (let j = 0; j < this.width; j++) {
         const cell = this.setCellSprite(i, j)
         row.push({
           transformValue: TRANSFORM_NONE,
@@ -90,11 +90,11 @@ export class Matrix {
   }
 
   setCellSprite(i, j) {
-    const cellSprite = new Phaser.Sprite(this.game, 100 + (TILE_SIZE.HEIGHT * (i + 1)), 100 + (TILE_SIZE.WIDTH * (j + 1)), 'tile')
+    const cellSprite = this.getLineSprite(i, j)
     cellSprite.inputEnabled = true
     cellSprite.events.onInputDown.add(this.handleCellClick, this, 0, i, j)
     cellSprite.events.onInputOver.add(this.handleCellPointerOver, this, 0, i, j)
-    cellSprite.events.onInputOut.add(this.handleCellPointerOut,  this, 0, i, j)
+    cellSprite.events.onInputOut.add(this.handleCellPointerOut, this, 0, i, j)
     return this.game.add.existing(cellSprite)
   }
 
@@ -111,10 +111,10 @@ export class Matrix {
     //set graphic of control
   }
 
-  getAvailableTiles(i,j) {
+  getAvailableTiles(i, j) {
     let available = [this.cells[i][j]]
     switch (this.selectedControl) {
-      case TRANSFORM_SWAPDOWN: 
+      case TRANSFORM_SWAPDOWN:
         if (j < this.height - 1) {
           available.push(this.cells[i][j + 1])
         } else {
@@ -125,7 +125,7 @@ export class Matrix {
   }
 
   handleCellClick(sprite, pointer, i, j) {
-    this.setControl({x: i, y: j}, this.selectedControl)
+    this.setControl({ x: i, y: j }, this.selectedControl)
   }
 
   handleCellPointerOver(sprite, pointer, i, j) {
@@ -139,9 +139,9 @@ export class Matrix {
 
   handleCellPointerOut(sprite, pointer, i, j) {
     const availableTiles = this.getAvailableTiles(i, j)
-      availableTiles.forEach(tile => {
-        this.resetFocus(tile.sprite)
-      })
+    availableTiles.forEach(tile => {
+      this.resetFocus(tile.sprite)
+    })
   }
 
   hightlightControl(sprite): void {
@@ -160,6 +160,25 @@ export class Matrix {
   resetFocus(sprite): void {
     this.hightlightTimer.stop()
     sprite.tint = 0xffffff
+  }
+
+  getLineSprite(i, j): Phaser.Sprite {
+    const x =  200 + (TILE_SIZE.WIDTH * SCALE) * i
+    const y =  j === 0 ? 130 : 130 + (TILE_SIZE.HEIGHT * SCALE * (j)) 
+    const line: Phaser.Sprite = new Phaser.Sprite(this.game, x, y, 'mainAtlas');
+    if (i === 0)
+      line.animations.add('move', ['line_l_0.png', 'line_l_1.png', 'line_l_2.png'], 10, true)
+    else if (i === (this.width - 1))
+      line.animations.add('move', ['line_r_0.png', 'line_r_1.png', 'line_r_2.png'], 10, true)
+    else
+      line.animations.add('move', ['line_m_0.png', 'line_m_1.png', 'line_m_2.png'], 10, true)
+    line.animations.play('move');
+
+    // Maybe scale the game instead of the game object?
+    line.scale.x = SCALE
+    line.scale.y = SCALE
+
+    return line
   }
 
 }

@@ -33,26 +33,6 @@ export class MainState extends State {
     this.setStartTimerButton()
     this.tintTimer =  this.game.time.create(false)
     
-    // example of adding a hardcoded line.
-    // {
-    //   const lineSize = 10;
-    //   for (let i = 0; i < lineSize; ++i)
-    //   {
-    //     let line : Phaser.Sprite = this.game.add.sprite(100 + 64 * i, 100, 'mainAtlas');
-    //     if (i === 0)
-    //       line.animations.add('move', ['line_l_0.png', 'line_l_1.png', 'line_l_2.png'], 10, true)
-    //     else if (i === (lineSize - 1))
-    //       line.animations.add('move', ['line_r_0.png', 'line_r_1.png', 'line_r_2.png'], 10, true)
-    //     else
-    //       line.animations.add('move', ['line_m_0.png', 'line_m_1.png', 'line_m_2.png'], 10, true)
-  
-    //      line.animations.play('move');
-         
-    //      // Maybe scale the game instead of the game object?
-    //      line.scale.x = 2.0;
-    //      line.scale.y = 2.0;
-    //   }
-    // }
     this.deleteControlButton = this.game.add.button(50, 130, 'cursor', this.setDeleteControl, this)    
     
   }
