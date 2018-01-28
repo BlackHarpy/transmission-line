@@ -157,16 +157,28 @@ export class Matrix {
     }
     this.addRecievers()
   }
+  
+  checkSolution () {
+	for(let i = 0; i < this.solutionLetters.length; i++) {
+		if (this.transmission[i] == this.solutionLetters[i].text) {
+			this.recievers[i].animations.play('good');
+		} else {
+			this.recievers[i].animations.play('bad');
+		}
+	}
+  }
 
   addRecievers() {
     for(let i = 0; i < this.height; i++) {
       const x = START_POINT.X + (TILE_SIZE.WIDTH * SCALE * (this.width + 2) + 32)
       const y = START_POINT.Y - 40 + (LINE_SPACE * i)
-      const line: Phaser.Sprite = new Phaser.Sprite(this.game, x, y, 'mainAtlas', 'table_normal.png');
-      line.scale.set(SCALE)
-      this.game.add.existing(line)
-      this.recievers.push(line) 
-      let text =  new Phaser.Text(this.game, x + 16, y + 52, '', this.textStyle)
+      const table: Phaser.Sprite = new Phaser.Sprite(this.game, x, y, 'mainAtlas', 'table_normal.png');
+	  table.animations.add('good', ['table_normal.png', 'table_good.png'], 10, false)
+	  table.animations.add('bad', ['table_normal.png', 'table_bad.png'], 10, false)
+      table.scale.set(SCALE)
+      this.game.add.existing(table)
+      this.recievers.push(table) 
+      let text =  new Phaser.Text(this.game, x + 20, y + 52, '', this.textStyle)
       this.solutionLetters.push(text)  
 	  this.game.add.existing(text)	  
     }

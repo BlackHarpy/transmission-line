@@ -88,6 +88,7 @@ export class MainState extends State {
         this.movingBoxes = false
         this.transmissionStarted = false
 		this.endTriggered = true
+		this.matrix.checkSolution()
 		this.game.time.events.add(Phaser.Timer.SECOND * 4, this.nextLevel, this)
       })
     }
