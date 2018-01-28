@@ -1,7 +1,7 @@
 import { GameData } from '../../../testbed/gamebase.js'
 import { Utils } from './utils'
 import { TILE_SIZE, SCALE, START_POINT, LINE_SPACE, MATRIX_START_X } from '../constants'
-import { TRANSFORM_NONE, TRANSFORM_SWAPUP, TRANSFORM_SWAPDOWN, TRANSFORM_CHANGECASE } from '../../../testbed/gamebase.js'
+import { TRANSFORM_NONE, TRANSFORM_SWAPDOWN, TRANSFORM_CHANGECASE, TRANSFORM_INCREMENT, TRANSFORM_DECREMENT } from '../../../testbed/gamebase.js'
 
 export class Matrix {
   game: Phaser.Game

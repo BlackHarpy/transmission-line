@@ -2,8 +2,8 @@
 
 import { State } from '../state'
 import { Matrix } from '../elements/matrix'
-import { MATRIX_SIZE } from '../constants'
-import { TRANSFORM_NONE, TRANSFORM_SWAPDOWN, TRANSFORM_CHANGECASE } from '../../../testbed/gamebase.js'
+import { MATRIX_SIZE, SCALE} from '../constants'
+import { TRANSFORM_NONE, TRANSFORM_SWAPDOWN, TRANSFORM_CHANGECASE, TRANSFORM_DECREMENT, TRANSFORM_INCREMENT } from '../../../testbed/gamebase.js'
 
 const cursorImage = require('assets/test-sprite.gif')
 const tileTest = require('assets/block.png')
@@ -24,7 +24,7 @@ export class MainState extends State {
   player: Player
   matrix: any
   timer: Phaser.Timer
-  startButton: Phaser.Button
+  startButton: Phaser.Sprite
   tintTimer: Phaser.Timer
   movingBoxes: boolean
   selectControlSound: Phaser.Sound
@@ -80,37 +80,67 @@ export class MainState extends State {
       }
     })
     this.timer.start()    
-    this.startButton = this.game.add.button(50, 200, 'cursor', this.startTransmission, this)
+    this.startButton = new Phaser.Sprite(this.game, 16, 336, 'mainAtlas', 'btn_play_0.png'),
+    this.game.add.existing(this.startButton)
+	this.startButton.inputEnabled = true
+	this.startButton.scale.set(SCALE)
+	this.startButton.animations.add('push', ['btn_play_1.png', 'btn_play_0.png'], 10, false)
+	this.startButton.events.onInputDown.add(this.startTransmission, this, 0, this.startButton)
   }
 
   startTransmission() {
+	this.startButton.animations.play("push")
     this.transmissionStarted = true
   }
 
   loadControls(): void {
     this.controls = [{
-        id: TRANSFORM_NONE,
-        name: 'Delete',
-        sprite: new Phaser.Sprite(this.game, 50, 110, 'cursor'),
-        timer:  this.game.time.create(false),
-        spriteInLine: new Phaser.Sprite(this.game, 0, 0)      
-      },{
       id: TRANSFORM_SWAPDOWN,
       name: 'Swap',
-      sprite: new Phaser.Sprite(this.game, 50, 50, 'cursor'),
-      timer:  this.game.time.create(false),
-      spriteInLine: 'swap'
+      sprite_base: 'btn_swap',
+	  spriteInLine: 'swap'
+	  x: 16,
+	  y: 48,
+      timer:  this.game.time.create(false)
     },{
       id: TRANSFORM_CHANGECASE,
       name: 'Change Case',
-      sprite: new Phaser.Sprite(this.game, 50, 80, 'cursor'),
-      timer: this.game.time.create(false),
-      spriteInLine: 'case'
+	  sprite_base: 'btn_case',
+	  spriteInLine: 'case'
+	  x: 16,
+	  y: 100,
+      timer:  this.game.time.create(false)      
+    },{
+      id: TRANSFORM_DECREMENT,
+      name: 'Delete',
+	  sprite_base: 'btn_dec',
+	  x: 16,
+	  y: 152,
+      timer:  this.game.time.create(false)      
+    },{
+      id: TRANSFORM_INCREMENT,
+      name: 'Delete',
+	  sprite_base: 'btn_inc',
+	  spriteInLine: 'inc'
+	  x: 16,
+	  y: 204,
+      timer:  this.game.time.create(false)      
+    },{
+      id: TRANSFORM_NONE,
+      name: 'Delete',
+	  sprite_base: 'btn_del',
+	  spriteInLine: new Phaser.Sprite(this.game, 0, 0)
+	  x: 16,
+	  y: 256,
+      timer:  this.game.time.create(false)      
     }]
 
     this.controls.forEach(control => {
+	  control.sprite = new Phaser.Sprite(this.game, control.x, control.y, 'mainAtlas', control.sprite_base + '_0.png'),
+	  control.sprite.scale.set(SCALE)
       this.game.add.existing(control.sprite)
       control.sprite.inputEnabled = true
+	  control.sprite.animations.add('push', [control.sprite_base + '_1.png', control.sprite_base + '_0.png'], 10, false)
       control.sprite.events.onInputDown.add(this.handleClick, this, 0, control)
       this.game.physics.enable(control.sprite, Phaser.Physics.ARCADE);
     })
@@ -123,6 +153,7 @@ export class MainState extends State {
         this.resetFocus(control)
       } else {
         this.selectControlSound.play()
+		control.sprite.animations.play('push')
         this.hightlightControl(control)
       }
     })
