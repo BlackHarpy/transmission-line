@@ -30,7 +30,7 @@ export class MainState extends State {
   selectControlSound: Phaser.Sound
   backgroundMusic: Phaser.Sound
   transmissionStarted: boolean
-  currentLevel: Number
+  currentLevel: number
   words: WordData
 
   preload(): void {
