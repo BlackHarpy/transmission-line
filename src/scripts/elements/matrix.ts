@@ -14,6 +14,7 @@ export class Matrix {
   selectedControl: number
   hightlightActive: boolean
   hightlightTimer: Phaser.Timer
+  textStyle: Phaser.PhaserTextStyle
 
   constructor(game, width, height) {
     this.game = game
@@ -25,6 +26,7 @@ export class Matrix {
     this.currentColumnPosition = 0
     this.hightlightTimer = this.game.time.create(false)
     this.hightlightActive = false
+    this.textStyle = { font: "22px Courier", fill: "#fff", strokeThickness: 4 }
   }
 
   getCellSprite(i,j) {
@@ -33,9 +35,9 @@ export class Matrix {
 
   setLetters(splitWord) {
     splitWord.forEach((character, index) => {
-      var spriteCharacter = new Phaser.Text(this.game, 0, 0, character)
+      var spriteCharacter = new Phaser.Text(this.game, 0, 0, character, this.textStyle)
       spriteCharacter.anchor.set(0.5, 0.5)
-      spriteCharacter.position.set(this.getCellSprite(this.currentColumnPosition,index).centerX, this.getCellSprite(this.currentColumnPosition,index).centerY)
+      spriteCharacter.position.set(this.getCellSprite(0,index).centerX - 80, this.getCellSprite(0,index).centerY)
       this.game.add.existing(spriteCharacter)
       this.letters.push({
         value: character,
@@ -54,7 +56,7 @@ export class Matrix {
   initialize(word) {
     this.transmission = word
     const splitWord = word.split('')
-    this.currentColumnPosition = 0
+    this.currentColumnPosition = -1
     this.setLetters(splitWord)
   }
 

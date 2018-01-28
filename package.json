@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --config webpack.config.js",
     "lint": "eslint src --ext ts",
-    "watch": "node ./src/server/init.js & webpack --watch --config webpack.config",
+    "watch": "webpack --watch --config webpack.config",
     "start": "electron .",
     "node": "node ./src/server/init.js",
     "dist": "build"
