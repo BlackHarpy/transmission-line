@@ -12,12 +12,13 @@ export class Matrix {
   height: number
   currentColumnPosition: number
   transmission: string
-  selectedControl: number
+  selectedControl: Control
   hightlightActive: boolean
   hightlightTimer: Phaser.Timer
   textStyle: Phaser.PhaserTextStyle
   placeControlSound: Phaser.Sound
   lineEndSprite: Phaser.Sprite[][]
+  placedControls: Phaser.Sprite[]
 
   constructor(game, width, height) {
     this.game = game
@@ -159,11 +160,10 @@ export class Matrix {
     return this.game.add.existing(cellSprite)
   }
 
-  setSelectedControl(controlValue) {
-    console.log('control id', controlValue)
-    this.selectedControl = controlValue
+  setSelectedControl(control) {
+    console.log('control id', control)
+    this.selectedControl = control
     this.hightlightActive = true
-    this.game
   }
 
   setControl(cellPosition, control) {
@@ -178,20 +178,22 @@ export class Matrix {
   }
 
   getAvailableTiles(i, j) {
-    let available = [this.cells[i][j]]
-    switch (this.selectedControl) {
-      case TRANSFORM_SWAPDOWN:
-        if (j < this.height - 1) {
-          available.push(this.cells[i][j + 1])
-        } else {
-          available = []
-        }
-    }
+    let available = []
+      available = [this.cells[i][j]]
+      console.log(this.selectedControl)
+      switch (this.selectedControl.id) {
+        case TRANSFORM_SWAPDOWN:
+          if (j < this.height - 1) {
+            available.push(this.cells[i][j + 1])
+          } else {
+            available = []
+          }
+      }
     return available
   }
 
   handleCellClick(sprite, pointer, i, j) {
-    this.setControl({ x: i, y: j }, this.selectedControl)
+    this.setControl({ x: i, y: j }, this.selectedControl.id)
   }
 
   handleCellPointerOver(sprite, pointer, i, j) {
