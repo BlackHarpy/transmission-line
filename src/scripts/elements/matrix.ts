@@ -19,6 +19,7 @@ export class Matrix {
   placeControlSound: Phaser.Sound
   lineEndSprite: Phaser.Sprite[][]
   placedControls: any[]
+  recievers: Phaser.Sprite[]
 
   constructor(game, width, height) {
     this.game = game
@@ -29,6 +30,7 @@ export class Matrix {
     this.letters = []
     this.lineEndSprite = []
     this.placedControls = []
+    this.recievers = []
     this.currentColumnPosition = 0
     this.hightlightTimer = this.game.time.create(false)
     this.hightlightActive = false
@@ -146,6 +148,18 @@ export class Matrix {
         })
       }
       this.cells.push(row)
+    }
+    this.addRecievers()
+  }
+
+  addRecievers() {
+    for(let i = 0; i < this.height; i++) {
+      const x = START_POINT.X + (TILE_SIZE.WIDTH * SCALE * (this.width + 2))
+      const y = START_POINT.Y - 40 + (LINE_SPACE * i)
+      const line: Phaser.Sprite = new Phaser.Sprite(this.game, x, y, 'mainAtlas', 'table_normal.png');
+      line.scale.set(SCALE)
+      this.game.add.existing(line)
+      this.recievers.push(line)            
     }
   }
 
