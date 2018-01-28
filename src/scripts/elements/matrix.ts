@@ -43,6 +43,8 @@ export class Matrix {
   resetData() {
     this.deleteLines()
     this.deleteBoxes()
+    this.deleteReceivers()
+    this.deleteSolutionLetters()
     this.deleteControls()
     this.cells = []
     this.letters = []
@@ -171,8 +173,13 @@ export class Matrix {
   }
 
   setSolution(word) {
-	for(let i = 0; i < word.length; i++) {
-		this.solutionLetters[i].text = word[i]
+	for(let i = 0; i < this.solutionLetters.length; i++) {
+		if (i < word.length) {
+			this.solutionLetters[i].text = word[i]
+		} else {
+			this.solutionLetters[i].text = " "
+		}
+		
 	}
   }
 
@@ -359,6 +366,20 @@ export class Matrix {
       box.text.destroy()
     })
     this.letters = []
+  }
+  
+  deleteReceivers() {
+    this.recievers.forEach(recv => {
+      recv.destroy()
+    })
+    this.recievers = []
+  }
+  
+  deleteSolutionLetters() {
+    this.solutionLetters.forEach(letter => {
+      letter.destroy()
+    })
+    this.solutionLetters = []
   }
 
   deleteLines() {
