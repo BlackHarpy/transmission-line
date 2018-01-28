@@ -18,7 +18,7 @@ export class Matrix {
   textStyle: Phaser.PhaserTextStyle
   placeControlSound: Phaser.Sound
   lineEndSprite: Phaser.Sprite[][]
-  placedControls: Phaser.Sprite[]
+  placedControls: any[]
 
   constructor(game, width, height) {
     this.game = game
@@ -28,6 +28,7 @@ export class Matrix {
     this.cells = []
     this.letters = []
     this.lineEndSprite = []
+    this.placedControls = []
     this.currentColumnPosition = 0
     this.hightlightTimer = this.game.time.create(false)
     this.hightlightActive = false
@@ -38,6 +39,7 @@ export class Matrix {
   resetData() {
     this.deleteLines()
     this.deleteBoxes()
+    this.deleteControls()
     this.cells = []
     this.letters = []
     this.lineEndSprite = []
@@ -72,19 +74,20 @@ export class Matrix {
   }
 
   moveLetters() {
-    const promises = []
-    this.startLinesAnimation()
-    this.letters.forEach((letter, index) => {
-      const x = this.getCellSprite(this.currentColumnPosition, index).centerX
-      const y = this.getCellSprite(this.currentColumnPosition, index).centerY
-      //letter.text.position.set(x + 30, y - 30)
-      //letter.sprite.position.set(x, y - 60)
-      promises.push(Utils.moveFowardTween(this.game, letter.text, x))
-      promises.push(Utils.moveFowardTween(this.game, letter.sprite, x))
-    })
-    Promise.all(promises).then(resolve => {
-      this.stopLinesAnimation()
-    })
+      const promises = []
+      this.startLinesAnimation()
+      this.letters.forEach((letter, index) => {
+        const x = this.getCellSprite(this.currentColumnPosition, index).centerX
+        const y = this.getCellSprite(this.currentColumnPosition, index).centerY
+        //letter.text.position.set(x + 30, y - 30)
+        //letter.sprite.position.set(x, y - 60)
+        promises.push(Utils.moveFowardTween(this.game, letter.text, x))
+        promises.push(Utils.moveFowardTween(this.game, letter.sprite, x))
+      })
+      return Promise.all(promises).then(resolve => {
+        this.stopLinesAnimation()
+      })
+    
   }
 
   initialize(word) {
@@ -97,11 +100,31 @@ export class Matrix {
   updateLettersPosition() {
     if (this.currentColumnPosition + 1 < this.width) {
       this.currentColumnPosition++
-      this.applyTransformations()
-      this.moveLetters()
+      this.moveLetters().then(resolve => {
+        Promise.all(this.turnOnControls()).then(result => {
+          this.applyTransformations()
+        })  
+      })
     } else {
       this.currentColumnPosition++
     }
+  }
+
+  turnOnControls() {
+    const promises = []
+    this.placedControls.forEach(control => {
+      if (control.position.x === this.currentColumnPosition) {
+        control.sprite.loadTexture(control.sprite.key,  control.key + '_1.png')
+        promises.push(new Promise(resolve => {
+          this.game.time.events.add(Phaser.Timer.HALF + Phaser.Timer.QUARTER, function () {
+         control.sprite.loadTexture(control.sprite.key,  control.key + '_0.png')
+            
+            resolve(true)
+          }, this);
+        }))
+      }
+    })
+    return promises
   }
 
   applyTransformations() {
@@ -167,10 +190,20 @@ export class Matrix {
   }
 
   setControl(cellPosition, control) {
-    const result = this.gameData.setCellWithRestrictions(cellPosition.x, cellPosition.y, control)
-    console.log(cellPosition)
+    const result = this.gameData.setCellWithRestrictions(cellPosition.x, cellPosition.y, control.id)
     if (result) {
-      this.cells[cellPosition.x][cellPosition.y].transformValue = control    
+      this.cells[cellPosition.x][cellPosition.y].transformValue = control
+      const spritePosition = {
+        x: this.cells[cellPosition.x][cellPosition.y].sprite.x,
+        y: this.cells[cellPosition.x][cellPosition.y].sprite.y - 70
+
+      }
+      const controlSprite =  new Phaser.Sprite(this.game, 0, 0,  'mainAtlas', control.spriteInLine + '_0.png')
+      controlSprite.scale.set(SCALE)
+      controlSprite.position.set(spritePosition.x, spritePosition.y)
+      this.game.add.existing(controlSprite)
+      this.placedControls.push({sprite: controlSprite, position: cellPosition, key: control.spriteInLine})
+      console.log(this.placedControls)
       this.placeControlSound.play()  
     }
     this.gameData.debugPrintProblem()
@@ -193,7 +226,7 @@ export class Matrix {
   }
 
   handleCellClick(sprite, pointer, i, j) {
-    this.setControl({ x: i, y: j }, this.selectedControl.id)
+    this.setControl({ x: i, y: j }, this.selectedControl)
   }
 
   handleCellPointerOver(sprite, pointer, i, j) {
@@ -304,6 +337,12 @@ export class Matrix {
         }
       }
     }
+  }
+
+  deleteControls() {
+    this.placedControls.forEach(control => {
+      control.sprite.destroy()
+    })
   }
 
 }

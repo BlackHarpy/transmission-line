@@ -74,7 +74,7 @@ export class MainState extends State {
   setStartTimerButton() {
     this.timer =  this.game.time.create(false)
     this.timer.loop(Phaser.Timer.SECOND, () => {
-      console.log('tick')
+      //console.log('tick')
       if (this.transmissionStarted) {
         this.matrix.updateLettersPosition()
       }
@@ -93,19 +93,19 @@ export class MainState extends State {
         name: 'Delete',
         sprite: new Phaser.Sprite(this.game, 50, 110, 'cursor'),
         timer:  this.game.time.create(false),
-        spriteInLine: new Phaser.Sprite(this.game, 50, 50, 'swap_0.png')      
+        spriteInLine: new Phaser.Sprite(this.game, 0, 0)      
       },{
       id: TRANSFORM_SWAPDOWN,
       name: 'Swap',
       sprite: new Phaser.Sprite(this.game, 50, 50, 'cursor'),
       timer:  this.game.time.create(false),
-      spriteInLine: new Phaser.Sprite(this.game, 50, 50, 'cursor')
+      spriteInLine: 'swap'
     },{
       id: TRANSFORM_CHANGECASE,
       name: 'Change Case',
       sprite: new Phaser.Sprite(this.game, 50, 80, 'cursor'),
       timer: this.game.time.create(false),
-      spriteInLine: new Phaser.Sprite(this.game, 50, 50, 'case_0.png')
+      spriteInLine: 'case'
     }]
 
     this.controls.forEach(control => {
