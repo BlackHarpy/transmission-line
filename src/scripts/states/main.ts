@@ -74,9 +74,13 @@ export class MainState extends State {
 
   setControls(): void {
     this.controls = [{
-      id: 3,
+      id: 2,
       name: 'Control 1',
       sprite: new Phaser.Sprite(this.game, 50, 50, 'cursor')
+    },{
+      id: 3,
+      name: 'Control 1',
+      sprite: new Phaser.Sprite(this.game, 50, 80, 'cursor')
     }]
 
     this.controls.forEach(control => {

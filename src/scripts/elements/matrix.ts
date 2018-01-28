@@ -12,6 +12,7 @@ export class Matrix {
   currentColumnPosition: number
   transmission: string
   selectedControl: number
+  hightlightActive: boolean
   hightlightTimer: Phaser.Timer
 
   constructor(game, width, height) {
@@ -23,6 +24,7 @@ export class Matrix {
     this.letters = []
     this.currentColumnPosition = 0
     this.hightlightTimer = this.game.time.create(false)
+    this.hightlightActive = false
   }
 
   getCellSprite(i,j) {
@@ -99,6 +101,7 @@ export class Matrix {
   setSelectedControl(controlValue) {
     console.log('control id', controlValue)
     this.selectedControl = controlValue
+    this.hightlightActive = true
   }
 
   setControl(cellPosition, control) {
@@ -109,20 +112,38 @@ export class Matrix {
     //set graphic of control
   }
 
+  getAvailableTiles(i,j) {
+    let available = [this.cells[i][j].sprite]
+    switch (this.selectedControl) {
+      case TRANSFORM_SWAPDOWN: 
+        if (j < this.height - 1) {
+          available.push(this.cells[i][j + 1].sprite)
+        } else {
+          available = []
+        }
+    }
+    return available
+  }
+
   handleCellClick(sprite, pointer, i, j) {
     this.setControl({x: i, y: j}, this.selectedControl)
   }
 
   handleCellPointerOver(sprite, pointer, i, j) {
-    console.log(i, j)
-    this.hightlightControl(sprite)
+    if (this.hightlightActive) {
+      const availableTiles = this.getAvailableTiles(i, j)
+      availableTiles.forEach(tile => {
+        this.hightlightControl(tile)
 
+      })
+    }
   }
 
   handleCellPointerOut(sprite, pointer, i, j) {
-    console.log(i, j)
-    this.resetFocus(sprite)
-
+    const availableTiles = this.getAvailableTiles(i, j)
+      availableTiles.forEach(tile => {
+        this.resetFocus(tile)
+      })
   }
 
   hightlightControl(sprite): void {
