@@ -1,7 +1,7 @@
 {
-  "name": "electron-phaser-test",
+  "name": "transmission-line",
   "version": "1.0.0",
-  "description": "First game using Phaser.io",
+  "description": "Game for the Global Game Jam 2018",
   "main": "main.js",
   "scripts": {
     "build": "webpack --config webpack.config.js",
@@ -13,14 +13,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BlackHarpy/phaser-first.git"
+    "url": "git+https://github.com/BlackHarpy/transmission-line.git"
   },
-  "author": "Maria Castro",
+  "author": "Maria Castro, Elias Zacarias, Felipe Alfonso",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/BlackHarpy/phaser-first/issues"
+    "url": "https://github.com/BlackHarpy/transmission-line/issues"
   },
-  "homepage": "https://github.com/BlackHarpy/phaser-first#readme",
+  "homepage": "https://github.com/BlackHarpy/transmission-line#readme",
   "dependencies": {
     "express": "^4.16.2",
     "phaser-ce": "^2.9.2"
