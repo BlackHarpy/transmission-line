@@ -67,6 +67,7 @@ export function GameData (w, h) {
 	
 	this.setCellWithRestrictions = function (x, y, val) {
 		if (!this.cellIsValid(x, y)) return false;
+		if (this.getCell(x, y) == val) return false;
 		// Check if it´s a valid cell for a swap-down
 		if (y == this.height-1 && val == TRANSFORM_SWAPDOWN) return false;
 		// If val = TRANSFORM_NONE then we are erasing a cell. For all other cases we
@@ -248,7 +249,7 @@ export function WordData () {
 
 	this.getTransformsForLevel = function (level) {
 		if (level >= this.transformsPerLevel.length) {
-			this.transformsPerLevel [this.transformsPerLevel.length - 1];
+			return this.transformsPerLevel [this.transformsPerLevel.length - 1];
 		} else {
 			return this.transformsPerLevel [level];
 		}

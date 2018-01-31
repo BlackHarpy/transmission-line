@@ -33,6 +33,7 @@ export class MainState extends State {
   currentLevel: number
   words: WordData
   endTriggered: boolean
+  highlightedControl: Control
 
   preload(): void {
    this.game.load.image('cursor', cursorImage)
@@ -98,6 +99,7 @@ export class MainState extends State {
     this.matrix = new Matrix(this.game, MATRIX_SIZE.WIDTH, word.length)
     this.matrix.drawMatrix()
     this.matrix.initialize(word)
+	this.hightlightControl(this.controls[0])
     this.matrix.setSelectedControl(this.controls[0])
   }
 
@@ -144,7 +146,7 @@ export class MainState extends State {
       timer:  this.game.time.create(false)      
     },{
       id: TRANSFORM_DECREMENT,
-      name: 'Delete',
+      name: 'Decrement',
     sprite_base: 'btn_dec',
     sprite: new Phaser.Sprite(this.game, 0, 0),    
 	  x: 16,
@@ -153,7 +155,7 @@ export class MainState extends State {
       timer:  this.game.time.create(false)      
     },{
       id: TRANSFORM_INCREMENT,
-      name: 'Delete',
+      name: 'Increment',
 	  sprite_base: 'btn_inc',
     spriteInLine: 'inc',
     sprite: new Phaser.Sprite(this.game, 0, 0),        
@@ -181,6 +183,12 @@ export class MainState extends State {
       this.game.physics.enable(control.sprite, Phaser.Physics.ARCADE);
     })
   }
+  
+  resetFocusAll () {
+	this.controls.forEach(control => {
+        this.resetFocus(control)
+	})
+  }
 
   handleClick(sprite, pointer, selected): void {
     this.matrix.setSelectedControl(selected)
@@ -206,12 +214,14 @@ export class MainState extends State {
       light = 0xffffff,
       dark = 0x918e8c
     }
+	if (this.highlightedControl != null) this.resetFocus(this.highlightedControl)
     let key: boolean = true
     control.timer.loop(Phaser.Timer.QUARTER / 2, () => {
       key = !key
       control.sprite.tint = key ? tints.dark : tints.light
     })
     control.timer.start()
+	this.highlightedControl = control
   }
 
   resetFocus(control): void {

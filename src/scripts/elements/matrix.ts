@@ -17,6 +17,7 @@ export class Matrix {
   hightlightTimer: Phaser.Timer
   textStyle: Phaser.PhaserTextStyle
   placeControlSound: Phaser.Sound
+  removeControlSound: Phaser.Sound
   lineEndSprite: Phaser.Sprite[][]
   placedControls: any[]
   recievers: Phaser.Sprite[]
@@ -38,6 +39,7 @@ export class Matrix {
     this.hightlightActive = false
     this.textStyle = { font: "22px Courier", fill: "#fff", strokeThickness: 4 }
     this.placeControlSound = this.game.add.sound('placeControlSFX')
+    this.removeControlSound = this.game.add.sound('removeControlSFX')
   }
 
   resetData() {
@@ -244,6 +246,7 @@ export class Matrix {
         })
         this.placedControls[index].sprite.destroy()
         this.placedControls.splice(index, 1);
+		this.removeControlSound.play()
       } else {
         this.cells[cellPosition.x][cellPosition.y].transformValue = control
         const spritePosition = {
