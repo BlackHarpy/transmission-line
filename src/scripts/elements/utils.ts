@@ -1,5 +1,55 @@
+import { TRANSFORM_NONE, TRANSFORM_SWAPDOWN, TRANSFORM_CHANGECASE, TRANSFORM_DECREMENT, TRANSFORM_INCREMENT } from '../../../testbed/gamebase.js'
+
 export class Utils {
-  tweens: Phaser.Tween[]
+
+  static getAllControls(game) {
+    return [{
+      id: TRANSFORM_SWAPDOWN,
+      name: 'Swap',
+    sprite: new Phaser.Sprite(game, 0, 0),      
+      sprite_base: 'btn_swap',
+	  spriteInLine: 'swap',
+	  x: 16,
+	  y: 48,
+      timer:  game.time.create(false)
+    },{
+      id: TRANSFORM_CHANGECASE,
+      name: 'Change Case',
+	  sprite_base: 'btn_case',
+    spriteInLine: 'case',
+    sprite: new Phaser.Sprite(game, 0, 0),          
+	  x: 16,
+	  y: 100,
+      timer:  game.time.create(false)      
+    },{
+      id: TRANSFORM_DECREMENT,
+      name: 'Decrement',
+    sprite_base: 'btn_dec',
+    sprite: new Phaser.Sprite(game, 0, 0),    
+	  x: 16,
+    y: 152,
+    spriteInLine: 'dec',    
+      timer:  game.time.create(false)      
+    },{
+      id: TRANSFORM_INCREMENT,
+      name: 'Increment',
+	  sprite_base: 'btn_inc',
+    spriteInLine: 'inc',
+    sprite: new Phaser.Sprite(game, 0, 0),        
+	  x: 16,
+	  y: 204,
+      timer:  game.time.create(false)      
+    },{
+      id: TRANSFORM_NONE,
+      name: 'Delete',
+	  sprite_base: 'btn_del',
+    spriteInLine: 'none',
+    sprite: new Phaser.Sprite(game, 0, 0),
+	  x: 16,
+	  y: 256,
+      timer:  game.time.create(false)      
+    }]
+  }
 
   static createFallTween(game, sprite, position) {
       return new Promise<any>(resolve => {

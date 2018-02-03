@@ -268,7 +268,6 @@ export class Matrix {
   getAvailableTiles(i, j) {
     let available = []
       available = [this.cells[i][j]]
-      console.log(this.selectedControl)
       switch (this.selectedControl.id) {
         case TRANSFORM_SWAPDOWN:
           if (j < this.height - 1) {
