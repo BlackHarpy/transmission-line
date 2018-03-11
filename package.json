@@ -39,10 +39,26 @@
     "webpack": "^3.8.1"
   },
   "build": {
-    "appId": "demo",
+    "appId": "pokeapi.client",
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
     "win": {
-      "target": "NSIS",
-      "icon": ""
+      "target": "portable"
+    },
+    "linux": {
+      "target": "AppImage"
     }
   }
 }

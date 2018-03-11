@@ -133,6 +133,7 @@ export class MainState extends State {
   }
 
   loadControls(transforms: number[]): void {
+    transforms.push(TRANSFORM_NONE);
     this.availableControls = []
     this.controls.forEach(control => {
       if (transforms.indexOf(control.id) !== -1) {
